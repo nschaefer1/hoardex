@@ -1,0 +1,114 @@
+/* =====================================================
+   GLOBAL.CSS
+   - Theme variables (dark default, light override)
+   - Base html/body styling
+   - Global scrollbar styling
+   ===================================================== */
+
+/* --- DARK THEME (default) --- */
+:root {
+    /* Backgrounds — deep arcane void */
+    --bg-primary: #0e0a1a;
+    --bg-secondary: #160f2b;
+    --bg-tertiary: #1e1535;
+
+    /* Text */
+    --text-primary: #e8dff5;
+    --text-secondary: #9b88c4;
+    --text-accent: #c084fc;
+
+    /* Borders */
+    --border: #2e1f5e;
+    --border-glow: #a855f7;
+
+    /* Accents */
+    --color-primary: #9333ea;            /* violet — regular action */
+    --color-primary-hover: #a855f7;
+    --color-danger: #be123c;             /* crimson — destructive */
+    --color-danger-hover: #e11d48;
+    --color-success: #15803d;
+    --color-disabled: #2e1f5e;
+
+    /* Ghost button — transparent, subtle */
+    --color-ghost: transparent;
+    --color-ghost-hover: rgba(168, 85, 247, 0.08);
+    --color-ghost-border: #3b2570;
+
+    /* On-accent text */
+    --text-on-accent: #f3e8ff;
+    --text-on-danger: #ffffff;
+    --text-on-ghost: #9b88c4;
+    --text-on-ghost-hover: #e8dff5;
+    --text-on-disabled: #4a3575;
+
+    /* Glow effects */
+    --glow-primary: 0 0 14px rgba(147, 51, 234, 0.45);
+    --glow-danger: 0 0 16px rgba(190, 18, 60, 0.5);
+}
+
+/* --- LIGHT THEME (active when <html class="light">) --- */
+:root.light {
+    --bg-primary: #f5f0ff;
+    --bg-secondary: #ede5ff;
+    --bg-tertiary: #ddd0f5;
+
+    --text-primary: #1a0f33;
+    --text-secondary: #5b4480;
+    --text-accent: #7c3aed;
+
+    --border: #c4aee8;
+    --border-glow: #7c3aed;
+
+    --color-primary: #7c3aed;
+    --color-primary-hover: #6d28d9;
+    --color-danger: #be123c;
+    --color-danger-hover: #9f1239;
+    --color-success: #15803d;
+    --color-disabled: #ddd0f5;
+
+    --color-ghost: transparent;
+    --color-ghost-hover: rgba(124, 58, 237, 0.07);
+    --color-ghost-border: #c4aee8;
+
+    --text-on-accent: #ffffff;
+    --text-on-danger: #ffffff;
+    --text-on-ghost: #5b4480;
+    --text-on-ghost-hover: #1a0f33;
+    --text-on-disabled: #9b88c4;
+
+    --glow-primary: none;
+    --glow-danger: none;
+}
+
+/* --- BASE PAGE STYLES --- */
+html, body {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: 'Palatino Linotype', 'Book Antiqua', Georgia, 'Segoe UI', serif;
+    margin: 0;
+    box-sizing: border-box;
+    height: 100%;
+}
+
+body {
+    padding: 10px;
+}
+
+/* --- SCROLLBARS (global, applies to anything scrollable) --- */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: var(--text-secondary);
+}
+::-webkit-scrollbar-corner {
+    background: transparent;
+}
