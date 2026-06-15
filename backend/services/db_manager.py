@@ -1,11 +1,14 @@
 import logging
 logger = logging.getLogger(__name__)
 
+import sys
 import sqlite3 as sql
 from contextlib import contextmanager
 from dataclasses import dataclass
 from typing import List, Tuple, Any, Optional
 from pathlib import Path
+
+from .py_confirm import Alert
 
 @dataclass(frozen=True)
 class DBReturn:
@@ -31,13 +34,17 @@ class DBManager:
     _schema_initialized = False                                     # Prevents multiple schema creations
     
     def __init__(self, db_path='database.db', *, start_scripts=[]):
-        self.db_path = db_path                                      # Database location
-        Path(self.db_path).mkdir(parents=True, exist_ok=True)       # Create folder if it doesn't exist
-        self._initialize_schema(start_scripts)                      # Schema creation
+        self.db_path = db_path                                              # Database location
+        Path(self.db_path).parent.mkdir(parents=True, exist_ok=True)        # Create folder if it doesn't exist
+        self._initialize_schema(start_scripts)                              # Schema creation
 
     def _initialize_schema(self, start_scripts):
         if DBManager._schema_initialized:
             return
+        if not Path(self.db_path).exists():
+            if not Alert().confirm("Database was not found relative to executable at data/database.db.\n\nThis is normal on first launch.\n\nCreate blank database?", "Database Not Found"):
+                Alert().info("Cannot open application without database, closing.")
+                sys.exit()
         for f in start_scripts:
             result = self.execute_path(path=f, script=True)
             if not result.success:
