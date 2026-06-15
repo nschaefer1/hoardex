@@ -22,7 +22,7 @@ create table if not exists dim_character (
     icon_path text default 'frontend/icons/default_bust.png',
 
     created_at integer,         -- will hold the unix epoch
-    updated_at integer
+    last_login integer
 );
 
 create table if not exists dim_inventory (
