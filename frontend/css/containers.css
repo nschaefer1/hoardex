@@ -1,0 +1,48 @@
+
+
+.c-wrap-container {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+    align-content: start;
+}
+
+.c-top-bar {
+    position: fixed;
+    top: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    z-index: 100;
+    gap: 10px;
+}
+
+.c-top-bar.left {
+    justify-content: left;
+    left: 10px;
+}
+
+.c-top-bar.right {
+    justify-content: right;
+    right: 10px;
+}
+
+
+.c-bottom-bar {
+    position: fixed;
+    bottom: 10px;
+    left: 0;
+    right: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.v-spacer {
+    height: 50px;
+}
+
+.v-flex-spacer {
+    flex: 1;
+}

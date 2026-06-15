@@ -1,0 +1,100 @@
+/*
+GENERIC BUTTONS
+*/
+
+.btn {
+    background: var(--color-primary);
+    color: var(--text-on-accent);
+    border: none;
+    border-radius: 6px;
+    padding: 8px 16px;
+    font-family: inherit;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.btn:hover {
+    background: var(--color-primary-hover);
+}
+
+.btn.floating {
+    box-shadow: var(--glow-primary);
+}
+
+.btn.norm-size {
+    min-width: 150px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.icon-btn {
+    width: 24px;
+    height: 24px;
+    color: var(--text-primary);
+    cursor: pointer;
+    user-select: none;
+    transition: color 0.15s, transform 0.15s;
+}
+
+.icon-btn:hover {
+    color: var(--color-primary);
+}
+
+.icon-btn.disabled {
+    color: var(--color-disabled);
+    pointer-events: none;
+}
+
+
+/**/
+
+
+/*
+CHARACTER SELECTION SCREEN
+*/
+
+.char-bust {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.char-bust .bust-icon {
+    width: 144px;
+    height: 144px;
+    border-radius: 50%;
+    background: var(--bg-tertiary);
+    border: 4px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+    overflow: hidden;
+    transition: border-color 0.2s;
+}
+
+.char-bust:hover .bust-icon {
+    border-color: var(--color-primary);
+}
+
+.char-bust .bust-name {
+    color: var(--text-secondary);
+    text-align: center;
+    max-width: 144px;
+}
+
+.char-bust.large .bust-icon {
+    width: 200px;
+    height: 200px;
+    border-width: 6px;
+}
+
+.char-bust.large .bust-name {
+    font-size: 24px;
+    max-width: 200px;
+    color: var(--text-primary);
+}
+
