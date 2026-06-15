@@ -3,7 +3,7 @@ import sys
 import os
 import webview
 
-from backend.api.api import API
+from backend import API, DBManager
 from pathlib import Path
 
 class MainApp:
@@ -41,7 +41,14 @@ if __name__ == '__main__':
     from nrs_toolkit.telemetry import AdvancedLogger
     AdvancedLogger(dev=True)
 
-    js_api = API(None)
-    app = MainApp(None, js_api)
+    db = DBManager(
+        'data/database.db', 
+        start_scripts = [
+            "sql/create_schema.sql", 
+            "sql/create_views.sql"
+        ]
+    )
+    js_api = API(db)
+    app = MainApp(db, js_api)
     
     app.run()

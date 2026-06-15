@@ -41,6 +41,7 @@ if (Test-Path $ExePath) {
 
 # Copy frontend folder next to the exe
 Copy-Item -Recurse -Force ".\frontend" "$OutDir\frontend"
+Copy-Item -Recurse -Force ".\sql" "$OutDir\sql"
 
 Write-Host ""
 Write-Host "Build complete: $BuildFolder" -ForegroundColor Green

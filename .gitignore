@@ -8,5 +8,7 @@ secrets/
 build/
 dist/
 *.spec
+*.db
 
+# App specific
 webview_data/
