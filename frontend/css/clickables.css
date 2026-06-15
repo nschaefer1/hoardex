@@ -17,6 +17,11 @@ GENERIC BUTTONS
     background: var(--color-primary-hover);
 }
 
+.btn.disabled {
+    background: var(--color-disabled);
+    pointer-events: none;
+}
+
 .btn.floating {
     box-shadow: var(--glow-primary);
 }
