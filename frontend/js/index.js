@@ -23,6 +23,15 @@ function wire_buttons(api) {
             sync_buttons();
         });
     });
+
+    on_click('new-char-btn', () => open_modal('new-char-modal'));
+    on_click('close-modal-btn', () => close_modal('new-char-modal'));
+
+    on_click('submit-new-char', () => {
+        console.log('New character submitted to database')
+        // TODO -- need to add the insert into the database
+        close_modal('new-char-modal')
+    });
 }
 
 function sync_buttons() {
@@ -32,4 +41,5 @@ function sync_buttons() {
     })
 }
 
-
+function open_modal(id) { document.getElementById(id).classList.add('active'); }
+function close_modal(id) { document.getElementById(id).classList.remove('active'); }
