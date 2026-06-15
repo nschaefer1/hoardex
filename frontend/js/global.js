@@ -63,3 +63,28 @@ function confirm_popup(message, title = 'Are you sure?') {
         popup.classList.add('show');
     });
 }
+
+// Zoom controls
+let zoom = 1.0;
+
+function zoomIn()    { zoom = Math.min(zoom + 0.1, 3.0); _applyZoom(); }
+function zoomOut()   { zoom = Math.max(zoom - 0.1, 0.3); _applyZoom(); }
+function resetZoom() { zoom = 1.0; _applyZoom(); }
+
+function _applyZoom() {
+    document.body.style.zoom = zoom;
+}
+
+document.addEventListener('wheel', (e) => {
+    if (!e.ctrlKey) return;
+    e.preventDefault();
+    if (e.deltaY < 0) zoomIn();
+    else zoomOut();
+}, { passive: false });
+
+document.addEventListener('keydown', (e) => {
+    if (!e.ctrlKey) return;
+    if (e.key === '=' || e.key === '+') { e.preventDefault(); zoomIn(); }
+    else if (e.key === '-')             { e.preventDefault(); zoomOut(); }
+    else if (e.key === '0')             { e.preventDefault(); resetZoom(); }
+});
