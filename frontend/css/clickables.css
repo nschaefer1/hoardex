@@ -82,6 +82,10 @@ CHARACTER SELECTION SCREEN
 }
 
 .char-bust:hover .bust-icon {
+    border-color: var(--color-primary-hover);
+}
+
+.char-bust.selected .bust-icon {
     border-color: var(--color-primary);
 }
 
