@@ -19,10 +19,11 @@ create table if not exists dim_character (
     medium_band integer,
     heavy_band integer,
 
+    icon_path text default 'frontend/icons/default_bust.png',
+
     created_at integer,         -- will hold the unix epoch
     updated_at integer
 );
-
 
 create table if not exists dim_inventory (
     inv_ck integer primary key not null unique,
