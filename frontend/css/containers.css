@@ -31,6 +31,25 @@ MAIN CONTAINERS
     min-width: 400px;
 }
 
+.toast {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--color-danger);
+    border-radius: 6px;
+    padding: 10px 16px;
+    color: var(--text-primary);
+    font-size: 14px; 
+    z-index: 300;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+.toast.active {
+    opacity: 1;
+}
+
 /*
 HEADER / FOOTER CONTAINERS
 */

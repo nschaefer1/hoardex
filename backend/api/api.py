@@ -26,11 +26,11 @@ logger = logging.getLogger(__name__)
 
 from .rest import (
     APIResponse,
-    BaseAPI,
+    RESTCharacter,
 )
 
 class API(
-    BaseAPI,            # Base methods that all other API classes have
+    RESTCharacter,      # Character table controls
 ):
 
     def __init__(self, db_manager):
