@@ -91,6 +91,30 @@ function wire_buttons(api) {
         location.reload();
     });
 
+    on_click('delete-char-btn', async () => {
+        const ele = document.getElementById('delete-char-btn');
+        ele.classList.add('disabled');
+        if (await confirm_dialog('Are you sure you want to delete this character?')) {
+            const selected = document.querySelector('.char-bust.selected');
+            const character_ck = selected?.dataset.ck;
+            
+            const response = await api.delete_character(character_ck);
+            if (!response.success) {
+                toast("Character deletion failed");
+                console.error("Character deletion failed");
+                ele.classList.remove('disabled');
+                return;
+            }
+
+            ele.classList.remove('disabled');
+            console.log("Character deletion successful");
+            location.reload();
+        } else {
+            toast("Character delete cancelled");
+            ele.classList.remove('disabled');
+        }
+    });
+
 }
 
 function sync_buttons() {

@@ -88,3 +88,30 @@ document.addEventListener('keydown', (e) => {
     else if (e.key === '-')             { e.preventDefault(); zoomOut(); }
     else if (e.key === '0')             { e.preventDefault(); resetZoom(); }
 });
+
+// Boilerplate Confirm Dialog Box -- assumes variables are built in the CSS
+function confirm_dialog(message) {
+    return new Promise((resolve) => {
+        const overlay = document.createElement('div');
+        overlay.className = 'modal-overlay active';
+        overlay.innerHTML = `
+            <div class="modal">
+                <p style="margin:0 0 20px 0;">${message}</p>
+                <div style="display:flex; justify-content:flex-end; gap:8px;">
+                    <div class="btn norm-size" id="_confirm-yes">Confirm</div>
+                    <div class="btn norm-size" style="background:var(--color-danger);" id="_confirm-no">Cancel</div>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(overlay);
+
+        overlay.querySelector('#_confirm-yes').addEventListener('click', () => {
+            overlay.remove();
+            resolve(true);
+        });
+        overlay.querySelector('#_confirm-no').addEventListener('click', () => {
+            overlay.remove();
+            resolve(false);
+        });
+    });
+}

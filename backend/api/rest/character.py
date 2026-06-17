@@ -32,3 +32,13 @@ class RESTCharacter(BaseAPI):
     def put_character(self, character_ck:int, **fields):
         """Update specific information on the character"""
         pass
+
+    def delete_character(self, character_ck:int):
+        """Delete a given character from the database"""
+        query = "delete from dim_character where character_ck = ?;"
+        response = self.db_manager.execute(query, (character_ck,))
+        if response.success:
+            return self._success_response(message=f"Character removed")
+        return self._failure_response("Character could not be removed from database")
+        
+    
