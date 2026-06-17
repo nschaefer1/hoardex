@@ -24,8 +24,8 @@ class RESTCharacter(BaseAPI):
     
     def post_character(self, character_name:str):
         """Post a new character into the database"""
-        query = "insert into dim_character (character_name) values (?);"
-        response = self.db_manager.execute(query, (character_name,))
+        query = "insert into dim_character (character_name, created_at) values (?, ?);"
+        response = self.db_manager.execute(query, (character_name, int(time.time())))
         if response.success:
             return self._success_response(message=rf"Character {character_name} added to database.")
         return self._failure_response("Character could not be added to database")
