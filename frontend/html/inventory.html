@@ -8,38 +8,128 @@
     <link rel="stylesheet" href="../css/containers.css">
     <link rel="stylesheet" href="../css/clickables.css">
     <link rel="stylesheet" href="../css/inputs.css">
+
+    <link rel="stylesheet" href="../css/inventory.css">
 </head>
 <body>
 
     <div class="page-layout">
 
         <div class="sidebar">
-            Sidebar
+            <div id="sidebar-content">
+
+                <div class="char-bust" id="sidebar-bust">
+                    <div class="bust-icon">
+                        <img src="../icons/default_bust.png" width="100%" height="100%" style="object-fit:cover;" alt="">
+                    </div>
+                    <div class="bust-name" id="sidebar-char-name">Character Name</div>
+                </div>
+
+                <div class="v-spacer" style="height:16px;"></div>
+                
+                <div id="sidebar-currency">
+                    <div class="currency-grid">
+                        <div class="currency-item">
+                            <span class="currency-label">PP</span>
+                            <span class="currency-value" id="cur-pp">0</span>
+                        </div>
+                        <div class="currency-item">
+                            <span class="currency-label">GP</span>
+                            <span class="currency-value" id="cur-gp">0</span>
+                        </div>
+                        <div class="currency-item">
+                            <span class="currency-label">SP</span>
+                            <span class="currency-value" id="cur-sp">0</span>
+                        </div>
+                        <div class="currency-item">
+                            <span class="currency-label">CP</span>
+                            <span class="currency-value" id="cur-cp">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="v-spacer" style="height:16px;"></div>
+                
+                <div id="sidebar-encumbrence">
+                    <span class="sidebar-label">Size</span>
+                    <span class="sidebar-value" id="char-size">Medium</span>
+                    
+                    <div class="v-spacer" style="height:8px;"></div>
+                    
+                    <span class="sidebar-label">Carry Weight</span>
+                    <span class="sidebar-value" id="char-weight">0 lbs</span>
+                    
+                    <div class="v-spacer" style="height:4px;"></div>
+
+                    <span class="sidebar-label">Light</span>
+                    <span class="sidebar-value" id="weight-light">0 lbs</span>
+                    <span class="sidebar-label">Medium</span>
+                    <span class="sidebar-value" id="weight-medium">0 lbs</span>
+                    <span class="sidebar-label">Heavy</span>
+                    <span class="sidebar-value" id="weight-heavy">0 lbs</span>
+
+                </div>
+                
+            </div>
+            <div class="top-bar">
+                <svg id="log-out-btn" title="Log Out" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-btn"><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/></svg>
+                <svg id="settings-btn" title="Settings" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-btn"><path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915"/><circle cx="12" cy="12" r="3"/></svg>
+                <svg id="admin-btn" title="Admin View"width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-btn"><path d="M16.051 12.616a1 1 0 0 1 1.909.024l.737 1.452a1 1 0 0 0 .737.535l1.634.256a1 1 0 0 1 .588 1.806l-1.172 1.168a1 1 0 0 0-.282.866l.259 1.613a1 1 0 0 1-1.541 1.134l-1.465-.75a1 1 0 0 0-.912 0l-1.465.75a1 1 0 0 1-1.539-1.133l.258-1.613a1 1 0 0 0-.282-.866l-1.156-1.153a1 1 0 0 1 .572-1.822l1.633-.256a1 1 0 0 0 .737-.535z"/><path d="M8 15H7a4 4 0 0 0-4 4v2"/><circle cx="10" cy="7" r="4"/></svg>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="tab-bar">
+                <div class="tab active"   id="tab-inventory">Inventory</div>
+                <div class="tab disabled" id="tab-spells">Spells</div>
+                <div class="tab disabled" id="tab-abilities">Abilities</div>
+                <div class="tab disabled" id="tab-notes">Notes</div>
+            </div>
+            <div class="inventory-toolbar">
+                <div>
+                    <input type="text" id="inventory-search" placeholder="Search items...">
+                </div>
+                <div style="display:flex; align-items:center; gap:4px;">
+                    <svg id="add-item-btn" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-btn"><circle cx="12" cy="12" r="10"/><path d="M8 12h8"/><path d="M12 8v8"/></svg>
+                    <div class="toolbar-sep"></div>
+                    <svg id="filter-weapons" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-btn"><path d="m11 19-6-6"/><path d="m5 21-2-2"/><path d="m8 16-4 4"/><path d="M9.5 17.5 21 6V3h-3L6.5 14.5"/></svg>
+                    <svg id="filter-armor" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-btn"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m4.243 5.21 14.39 12.472"/></svg>
+                    <svg id="filter-consumables" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-btn"><path d="M10 2v6.292a7 7 0 1 0 4 0V2"/><path d="M5 15h14"/><path d="M8.5 2h7"/></svg>
+                    <svg id="clear-filter" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-btn disabled"><path d="M12.531 3H3a1 1 0 0 0-.742 1.67l7.225 7.989A2 2 0 0 1 10 14v6a1 1 0 0 0 .553.895l2 1A1 1 0 0 0 14 21v-7a2 2 0 0 1 .517-1.341l.427-.473"/><path d="m16.5 3.5 5 5"/><path d="m21.5 3.5-5 5"/></svg>
+                    <div class="toolbar-sep"></div>
+                    <svg id="asc-sort-btn" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-btn disabled"><path d="m3 16 4 4 4-4"/><path d="M7 20V4"/><path d="M20 8h-5"/><path d="M15 10V6.5a2.5 2.5 0 0 1 5 0V10"/><path d="M15 14h5l-5 6h5"/></svg>
+                    <svg id="desc-sort-btn" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-btn"><path d="m3 8 4-4 4 4"/><path d="M7 4v16"/><path d="M20 8h-5"/><path d="M15 10V6.5a2.5 2.5 0 0 1 5 0V10"/><path d="M15 14h5l-5 6h5"/></svg>
+                </div>
+            </div>
+            
+            <div class="inv-list" id="inventory-grid">
+                <div class="inv-item" data-inv-ck="1">
+                    <div class="inv-item-icon">
+                        <img src="../icons/default.png" alt="">
+                    </div>
+                    <div class="inv-item-body">
+                        <div class="inv-item-name">Longsword</div>
+                        <div class="inv-item-meta">Weapon · 4 lbs</div>
+                    </div>
+                    <div class="inv-item-qty">x2</div>
+                </div>
+                <div class="inv-item" data-inv-ck="2">
+                    <div class="inv-item-icon">
+                        <img src="../icons/default.png" alt="">
+                    </div>
+                    <div class="inv-item-body">
+                        <div class="inv-item-name">Leather Armor</div>
+                        <div class="inv-item-meta">Armor · 15 lbs</div>
+                    </div>
+                    <div class="inv-item-qty">x1</div>
+                </div>
+            </div>
+
         </div>
 
     </div>
     
-    <div id="top-bar">
-        
-    </div>
-    
-    <div id="side-bar">
-
-    </div>
-
-    <div id="tab-bar">
-
-    </div>
-
-    <div id="inventory-table">
-
-    </div>
-
-    <div id="bottom-bar">
-
-    </div>
-
-    <div class="slide-over" id="new-itemslide-over">
+    <div class="slide-over" id="new-item-slide-over">
 
     </div>
     
@@ -48,5 +138,6 @@
 </body>
 <script src="../router.js"></script>
 <script src="../js/global.js"></script>
+<script src="../js/inventory.js"></script>
 
 </html>
