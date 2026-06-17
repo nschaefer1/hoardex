@@ -90,11 +90,6 @@ html, body {
     box-sizing: border-box;
     height: 100%;
 }
-
-body {
-    padding: 10px;
-}
-
 /* --- SCROLLBARS (global, applies to anything scrollable) --- */
 ::-webkit-scrollbar {
     width: 6px;
