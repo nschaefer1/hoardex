@@ -5,6 +5,7 @@ async function go(page) {
         
         // Sample pages
         pg1: 'html/index.html',
+        pg2: 'html/inventory.html',
 
         // Add HTML here
     };
@@ -17,6 +18,7 @@ async function go(page) {
 
     try {
         const absolutePath = await window.pywebview.api.resolve_path(file);     // ← Present in the API class covered in this document
+        console.log("Attempting to navigate to", absolutePath);
         window.location.href = `file:///${absolutePath}`;
     } catch (e) {
         console.error('Navigation failed:', e);

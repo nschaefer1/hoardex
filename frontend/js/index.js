@@ -42,7 +42,6 @@ async function load_characters(api) {
 function build_bust(character, large) {
     const sizeClass = large ? 'char-bust large' : 'char-bust';
     const icon = character.icon_path ? `../../../../${character.icon_path}` : '../icons/default_bust.png';
-    console.log(sizeClass)
     return `
         <div class="${sizeClass}" data-ck="${character.character_ck}">
             <img class="bust-icon" src="'${icon}" width="100%" height="100%" style="object-fit:cover;">
@@ -113,6 +112,10 @@ function wire_buttons(api) {
             toast("Character delete cancelled");
             ele.classList.remove('disabled');
         }
+    });
+
+    on_click('login-btn', async () => {
+        go('pg2');
     });
 
 }
