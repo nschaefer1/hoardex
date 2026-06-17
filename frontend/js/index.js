@@ -43,7 +43,7 @@ function build_bust(character, large) {
     const sizeClass = large ? 'char-bust large' : 'char-bust';
     const icon = character.icon_path ? `../../../../${character.icon_path}` : '../icons/default_bust.png';
     return `
-        <div class="${sizeClass}" data-ck="${character.character_ck}">
+        <div class="${sizeClass}" data-ck="${character.character_ck}" data-name="${character.character_name}">
             <img class="bust-icon" src="'${icon}" width="100%" height="100%" style="object-fit:cover;">
             <div class="bust-name">
                 ${character.character_name}
@@ -115,7 +115,31 @@ function wire_buttons(api) {
     });
 
     on_click('login-btn', async () => {
-        go('pg2');
+        const selected = document.querySelector('.char-bust.selected');
+        const character_ck = selected?.dataset.ck;
+        const character_name = selected?.dataset.name;
+
+        const ele = document.getElementById('login-btn');
+        ele.classList.add('disabled');
+        
+        let response = await api.set_session('character_ck', character_ck);
+        if (!response.success) {
+            toast("Login failed");
+            console.error("Failed to login during character_ck session set")
+            ele.classList.remove('disabled');
+            return;
+        }
+
+        response = await api.set_session('character_name', character_name);
+        if (!response.success) {
+            toast("Login failed");
+            console.error("Failed to login during character_name session set")
+            ele.classList.remove('disabled');
+            return;
+        }
+        
+        ele.classList.remove('disabled');
+        go('pg2'); // inventory HTML document
     });
 
 }

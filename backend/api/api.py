@@ -44,11 +44,11 @@ class API(
     def set_session(self, key, value):
         self.session[key] = value
         logger.debug(f'Set {key}: {value}')
-        return True
+        return self._success_response()
     def get_session(self, key):
-        return self.session.get(key, None)
+        return self._success_response(data=self.session.get(key, None))
     def remove_session(self, key):
         logger.debug(f'Removed `{key}` from session')
-        return self.session.pop(key, False)
+        return self._success_response(data=self.session.pop(key, False))
 
     
