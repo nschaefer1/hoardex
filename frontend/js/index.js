@@ -125,7 +125,7 @@ function wire_buttons(api) {
         let response = await api.set_session('character_ck', character_ck);
         if (!response.success) {
             toast("Login failed");
-            console.error("Failed to login during character_ck session set")
+            console.error("Failed to login during character_ck session set", response.message);
             ele.classList.remove('disabled');
             return;
         }
@@ -133,7 +133,15 @@ function wire_buttons(api) {
         response = await api.set_session('character_name', character_name);
         if (!response.success) {
             toast("Login failed");
-            console.error("Failed to login during character_name session set")
+            console.error("Failed to login during character_name session set", response.message);
+            ele.classList.remove('disabled');
+            return;
+        }
+        
+        response = await api.put_char_sign_in(character_ck);
+        if (!response.success) {
+            toast("Login failed");
+            console.error("Failed to login during update", response.message);
             ele.classList.remove('disabled');
             return;
         }
