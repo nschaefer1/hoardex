@@ -9,12 +9,51 @@ window.addEventListener('pywebviewready', () => {
 });
 
 async function init(api) {
+    load_characters(api);
     wire_buttons(api);
 }
 
-function wire_buttons(api) {
-    on_click('theme-btn', toggle_theme);
+async function load_characters(api) {
 
+    // Retrieve list of characters from API
+    const response = await api.get_all_characters();
+    if (!response.success) {
+        toast('Characters could not be retrieved from database');
+        console.error('Characters could not be retrieved from database.');
+        return;
+    }
+    // Check  response validitiy
+    const data = response.data;
+    if (!data || data.length === 0) {
+        toast('No characters found in database');
+        console.log('No characters found in database.');
+        return;
+    }
+    // Document elements
+    const top = document.getElementById('top-level-container');
+    const others = document.getElementById('other-char-container');
+    // Add the busts to the document
+    top.innerHTML = build_bust(data[0], true);
+    others.innerHTML = data.slice(1).map(c => build_bust(c, false)).join('');
+    // Wire them to work
+    wire_busts();
+}
+
+function build_bust(character, large) {
+    const sizeClass = large ? 'char-bust large' : 'char-bust';
+    const icon = character.icon_path ? `../../../../${character.icon_path}` : '../icons/default_bust.png';
+    console.log(sizeClass)
+    return `
+        <div class="${sizeClass}" data-ck="${character.character_ck}">
+            <img class="bust-icon" src="'${icon}" width="100%" height="100%" style="object-fit:cover;">
+            <div class="bust-name">
+                ${character.character_name}
+            </div>
+        </div>
+    `
+}
+
+function wire_busts() {
     document.querySelectorAll('.char-bust').forEach(bust => {
         bust.addEventListener('click', () => {
             const isSelected = bust.classList.contains('selected')
@@ -23,6 +62,10 @@ function wire_buttons(api) {
             sync_buttons();
         });
     });
+}
+
+function wire_buttons(api) {
+    on_click('theme-btn', toggle_theme);
 
     on_click('new-char-btn', () => open_modal('new-char-modal'));
     on_click('close-modal-btn', () => close_modal('new-char-modal'));

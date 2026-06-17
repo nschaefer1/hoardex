@@ -94,3 +94,4 @@ class BaseAPI:
                     obj[i] = None
                 else:
                     self._normalize(v)
+        return obj
