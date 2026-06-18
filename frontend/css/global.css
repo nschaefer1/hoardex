@@ -84,7 +84,7 @@
 html, body {
     background-color: var(--bg-primary);
     color: var(--text-primary);
-    font-family: 'Palatino Linotype', 'Book Antiqua', Georgia, 'Segoe UI', serif;
+    font-family: 'Book Antiqua', Georgia, 'Segoe UI', serif;
     font-size: 20px;
     margin: 0;
     box-sizing: border-box;

@@ -122,6 +122,11 @@ MAIN INVENTORY FORMATTING
     border-color: var(--color-primary);
 }
 
+.inv-item.selected {
+    border-color: var(--border-glow);
+    box-shadow: var(--glow-primary);
+}
+
 .inv-item-icon {
     width: 40px;
     height: 40px;
@@ -152,9 +157,16 @@ MAIN INVENTORY FORMATTING
     margin-top: 2px;
 }
 
+.inv-item-right {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
 .inv-item-qty {
-    font-size: 13px;
-    color: var(--text-accent);
-    font-style: italic;
+    font-size: 18px;
+    color: var(--text-primary);
     flex-shrink: 0;
 }

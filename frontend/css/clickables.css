@@ -51,8 +51,12 @@ GENERIC BUTTONS
     pointer-events: none;
 }
 
+.icon-btn.sm {
+    width: 16px;
+    height: 16px;
+}
 
-/**/
+
 
 
 /*
@@ -107,3 +111,15 @@ CHARACTER SELECTION SCREEN
     color: var(--text-primary);
 }
 
+
+
+.ghost-btn {
+    font-size: 12px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    text-underline-offset: 3px;
+}
+
+.ghost-btn:hover {
+    color: var(--text-accent);
+}
