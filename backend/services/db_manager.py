@@ -9,6 +9,7 @@ from typing import List, Tuple, Any, Optional
 from pathlib import Path
 
 from .py_confirm import Alert
+from .icon_manager import IconManager
 
 @dataclass(frozen=True)
 class DBReturn:
@@ -41,15 +42,23 @@ class DBManager:
     def _initialize_schema(self, start_scripts):
         if DBManager._schema_initialized:
             return
+        # Check to see if the database exists, if it doesn't force creation
         if not Path(self.db_path).exists():
             if not Alert().confirm("Database was not found relative to executable at data/database.db.\n\nThis is normal on first launch.\n\nCreate blank database?", "Database Not Found"):
                 Alert().info("Cannot open application without database, closing.")
                 sys.exit()
+        # Seed default icons & hash values
+        seed_query = "insert or ignore into dim_icon (icon_path, icon_hash) values (?, ?);"
+        for p in ['frontend/icons/default.png', 'frontend/icons/default_bust.png']:
+            hash_val = IconManager.hash_png(p)
+            self.execute(seed_query, (p, hash_val))
+        # Run schema steps
         for f in start_scripts:
             result = self.execute_path(path=f, script=True)
             if not result.success:
                 logger.error(f"Database initialization failed on step {f}")
                 raise RuntimeError("Database initialization failed")
+        # Set singleton variable
         DBManager._schema_initialized = True
      
     def execute(self, query, params=None):
@@ -72,7 +81,7 @@ class DBManager:
                 )
             except Exception as e:
                 conn.rollback()
-                logger.error(f'Execution failed, transaction rolled back')
+                logger.error(f'Execution failed, transaction rolled back: {e}')
                 return DBReturn(
                     success = False
                 )
@@ -88,7 +97,7 @@ class DBManager:
                 )
             except Exception as e:
                 conn.rollback()
-                logger.error(f'SQL Script execution failed, transaction rolled back')
+                logger.error(f'SQL Script execution failed, transaction rolled back: {e}')
                 return DBReturn(
                     success = False
                 )
@@ -111,7 +120,7 @@ class DBManager:
                 return DBReturn(success=True)
             except Exception as e:
                 conn.rollback()
-                logger.error(f'Executemany failed')
+                logger.error(f'Executemany failed: {e}')
                 return DBReturn(success=False)
     
     @contextmanager
@@ -124,7 +133,7 @@ class DBManager:
             logger.debug(f'SQL transaction completed successfully.')
         except:
             conn.rollback()
-            logger.error(f'SQL transaction failed, rolling back.')
+            logger.error(f'SQL transaction failed, rolling back')
             raise
         finally:
             conn.close()
