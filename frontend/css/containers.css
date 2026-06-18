@@ -82,6 +82,7 @@ MAIN CONTAINERS
     z-index: 300;
     opacity: 0;
     transition: opacity 0.2s;
+    pointer-events: none;
 }
 .toast.active {
     opacity: 1;

@@ -40,6 +40,10 @@ function wire_buttons(api) {
     // New item rendering in the HTML
     on_click('item-creation-btn', () => show_create_form());
 
+    // Item details button handling
+    on_click('add-stat-btn', () => add_stat_row());
+    on_click('sheet-submit-create', () => sheet_submit_handle(api));
+
 }
 
 
@@ -83,4 +87,99 @@ function show_detail_form() {
     document.getElementById('sheet-detail-default').style.display = 'block';
     document.getElementById('sheet-detail-edit-footer').style.display = 'none';
     document.getElementById('sheet-detail-add-footer').style.display = 'none';
+}
+
+async function sheet_submit_handle(api) {
+    const ele = document.getElementById('sheet-submit-create')
+    ele.classList.add('disabled');
+
+    // Validate inventory name
+    const inv_name = document.getElementById('create-inv-name').value.trim();
+    if (!inv_name) {
+        toast('Item name cannot be blank');
+        ele.classList.remove('disabled');
+        return;
+    }
+
+    // Validate weight_lbs
+    const weight_lbs = document.getElementById('create-weight-lbs').value.trim() || null;
+    if (weight_lbs !== null && isNaN(parseFloat(weight_lbs))) {
+        toast('Weight must be a number');
+        ele.classList.remove('disabled');
+        return;
+    }
+
+    // Validate icon_stats
+    const stats = get_stats();
+    for (const [key, val] of Object.entries(stats)) {
+        if (isNaN(parseFloat(val))) {
+            toast(`Stat "${key}" must be a number`);
+            ele.classList.remove('disabled');
+            return;
+        }
+    }
+    
+    const inv_desc = document.getElementById('create-inv-desc').value.trim() || null;
+    const inv_type = document.getElementById('create-inv-type').value.trim() || null;
+    const equip_location = document.getElementById('create-equip-location').value.trim() || null;
+    const child_ind = document.getElementById('create-child-ind').checked ? 1 : 0;
+    const icon_path = document.querySelector('.icon-option.selected')?.dataset.path || null;
+
+    const response = await api.post_inventory_item(
+        inv_name, inv_desc, child_ind, inv_type, equip_location,
+        icon_path, weight_lbs, stats
+    );
+
+    if (!response.success) {
+        toast('Failed to create item');
+        console.error('Item creation failed:', response.message);
+        ele.classList.remove('disabled');
+        return;
+    }
+
+    console.log('Item created successfully.');
+    ele.classList.remove('disabled');
+    reset_create_form();        // clear out the create form
+    show_detail_form();         // show the detail form
+}
+
+function add_stat_row() {
+    const row = document.createElement('div');
+    row.className = 'stat-row';
+    row.innerHTML = `
+        <input type="text" placeholder="Stat name">
+        <input type="text" placeholder="Value">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-btn sm"><path d="M18 6L6 18"/><path d="M6 6l12 12"/></svg>
+    `;
+    row.querySelector('svg').addEventListener('click', () => row.remove());
+    document.getElementById('stat-rows').appendChild(row);
+}
+
+function get_stats() {
+    const stats = {};
+    document.querySelectorAll('.stat-row').forEach(row => {
+        const inputs = row.querySelectorAll('input');
+        const key = inputs[0].value.trim();
+        const val = inputs[1].value.trim();
+        if (key) stats[key] = val;
+    });
+    return stats;
+}
+
+function reset_create_form() {
+    document.getElementById('create-inv-name').value = '';
+    document.getElementById('create-inv-desc').value = '';
+    document.getElementById('create-inv-type').value = '';
+    document.getElementById('create-equip-location').value = '';
+    document.getElementById('create-weight-lbs').value = '';
+    document.getElementById('create-child-ind').checked = false;
+    document.getElementById('stat-rows').innerHTML = '';
+    document.querySelectorAll('.icon-option').forEach(i => i.classList.remove('selected'));
+}
+
+function toast(message, duration = 2500) {
+    let t = document.getElementById('toast');
+    t.innerText = message;
+    t.classList.add('active');
+    setTimeout(() => t.classList.remove('active'), duration);
 }
