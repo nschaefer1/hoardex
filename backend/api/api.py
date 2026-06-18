@@ -27,10 +27,12 @@ logger = logging.getLogger(__name__)
 from .rest import (
     APIResponse,
     RESTCharacter,
+    RESTInventory,
 )
 
 class API(
     RESTCharacter,      # Character table controls
+    RESTInventory,      # Inventory item calls
 ):
 
     def __init__(self, db_manager):
