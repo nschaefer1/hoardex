@@ -107,32 +107,41 @@
                 </div>
             </div>
             
-            <div class="inv-list" id="inventory-grid">
-                <div class="inv-item" data-inv-ck="1">
-                    <div class="inv-item-icon">
-                        <img src="../icons/default.png" alt="">
-                    </div>
-                    <div class="inv-item-body">
-                        <div class="inv-item-name">Longsword</div>
-                        <div class="inv-item-meta">Weapon · 4 lbs</div>
-                    </div> 
-                    <div class="inv-item-right">
-                        <div class="inv-item-qty">x2</div>
-                        <div class="toolbar-sep"></div>
-                        <div style="display:flex; gap: 6px;">
-                            <svg id="increment-item" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-btn sm"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
-                            <svg id="decrement-item" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-btn sm"><path d="M5 12h14"/></svg>
-                            <svg id="drop-all-item" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-btn sm"><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+            <div class="inv-content">
+
+                <div class="inv-list" id="inventory-grid">
+                    <div class="inv-item" data-inv-ck="1">
+                        <div class="inv-item-icon">
+                            <img src="../icons/default.png" alt="">
+                        </div>
+                        <div class="inv-item-body">
+                            <div class="inv-item-name">Longsword</div>
+                            <div class="inv-item-meta">Weapon · 4 lbs</div>
+                        </div> 
+                        <div class="inv-item-right">
+                            <div class="inv-item-qty">x2</div>
+                            <div class="toolbar-sep"></div>
+                            <div style="display:flex; gap: 6px;">
+                                <svg id="increment-item" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-btn sm"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+                                <svg id="decrement-item" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-btn sm"><path d="M5 12h14"/></svg>
+                                <svg id="drop-all-item" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-btn sm"><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                            </div>
                         </div>
                     </div>
                 </div>
+
+                <div class="inv-drawer" id="item-drawer">
+                    <div id="item-drawer-content"></div>
+                </div>
+
             </div>
         </div>
 
     </div>
     
-    <div class="slide-over" id="new-item-slide-over">
-
+    <div class="bottom-sheet-overlay" id="add-item-overlay"></div>
+    <div class="bottom-sheet" id="add-item-sheet">
+        ... this will be content
     </div>
     
     <div class="toast" id="toast"></div>

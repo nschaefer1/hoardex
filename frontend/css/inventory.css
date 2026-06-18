@@ -90,6 +90,14 @@ TOOLBAR NESTED IN INVENTORY CONTENT
 MAIN INVENTORY FORMATTING
 */
 
+
+.inv-content {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    overflow: hidden;
+}
+
 #inventory-grid {
     display: flex;
     flex-wrap: wrap;
@@ -104,6 +112,7 @@ MAIN INVENTORY FORMATTING
     gap: 6px;
     padding: 16px;
     overflow-y: auto;
+    flex:1;
 }
 
 .inv-item {
@@ -169,4 +178,57 @@ MAIN INVENTORY FORMATTING
     font-size: 18px;
     color: var(--text-primary);
     flex-shrink: 0;
+}
+
+/*
+INVENTORY DRAWER
+*/
+
+.inv-drawer {
+    background: var(--bg-secondary);
+    padding: 0 16px; 
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.5s ease, padding 0.5s ease;
+}
+
+.inv-drawer.active {
+    border-top: 1px solid var(--border-glow);
+    max-height: 300px;
+    padding: 16px;
+}
+
+/* 
+NEW ITEM OVERLAY
+*/
+
+.bottom-sheet-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    z-index: 200;
+}
+
+.bottom-sheet-overlay.active {
+    display: block;
+}
+
+.bottom-sheet {
+    position: fixed;
+    bottom: -100%;
+    left: 0;
+    right: 0; 
+    background: var(--bg-secondary);
+    border-top: 1px solid var(--border-glow);
+    border-radius: 12px 12px 0 0;
+    padding: 24px;
+    z-index: 201;
+    transition: bottom 0.3s ease;
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+.bottom-sheet.active {
+    bottom: 0;
 }
