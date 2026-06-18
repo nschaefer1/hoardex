@@ -139,11 +139,50 @@
 
     </div>
     
+
+    <!-- This is adding an item section, which will also contain item edits -->
     <div class="bottom-sheet-overlay" id="add-item-overlay"></div>
     <div class="bottom-sheet" id="add-item-sheet">
-        ... this will be content
+        
+        <div class="sheet-layout">
+
+            <div class="sheet-left">
+                <input type="text" id="sheet-search" placeholder="Search items...">
+                <div class="inv-list" id="sheet-item-list">
+                    <!-- JS populates -->
+                </div>
+            </div>
+
+            <div class="sheet-right">
+                <div class="sheet-detail-header">
+                    <span id="sheet-item-title" class="sidebar-value">Select an item</span>
+                    <div stlye="display: flex; gap: 8px;">
+                        <svg id="item-creation-btn" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-btn"><path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 .83.18 2 2 0 0 0 .83-.18l8.58-3.9a1 1 0 0 0 0-1.831z"/><path d="M16 17h6"/><path d="M19 14v6"/><path d="M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 .825.178"/><path d="M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l2.116-.962"/></svg>
+                        <svg id="item-edit-btn" class="icon-btn disabled" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-btn disabled"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></svg>
+                        <svg id="close-sheet-layout" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-btn"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                    </div>
+                </div>
+
+                <div class="sheet-detail-body" id="sheet-detail=body">
+                    <!-- populated by JS -->
+                </div>
+
+                <div class="sheet-detail-footer">
+                    <div class="sheet-footer-default">
+                        <div class="btn norm-size disabled" id="sheet-add-btn">Add to Inventory</div>
+                    </div>
+                    <div class="sheet-footer-btn" style="display: none;">
+                        <div class="btn norm-size" style="background: var(--color-danger);" id="sheet-apply-btn">Delete</div>
+                        <div class="btn norm-size" id="sheet-apply-changes">Apply Changes</div>
+                    </div>  
+                </div>
+
+            </div>
+
+        </div>
+
     </div>
-    
+
     <div class="toast" id="toast"></div>
 
 </body>
