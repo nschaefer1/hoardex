@@ -18,7 +18,7 @@ class RESTInventory(BaseAPI):
         return self._success_response()
 
     def get_all_inventory_items(self):
-        query = "select inv_ck, inv_name, inv_type, icon_path from dim_inventory order by inv_name asc;"
+        query = "select inv_ck, inv_name, inv_type, icon_path, inv_stats from dim_inventory order by inv_name asc;"
         response = self.db_manager.execute(query)
         if not response.success:
             return self._failure_response("Could not retrieve inventory items")
