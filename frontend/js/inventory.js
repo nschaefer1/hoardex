@@ -18,6 +18,7 @@ async function init(api) {
     wire_icon_drop_zone(api);
     await load_character_inventory(api);
     wire_inventory_buttons(api);
+    load_wallet(api);
 }
 
 function wire_buttons(api) {
@@ -122,6 +123,24 @@ function wire_buttons(api) {
         document.getElementById('desc-sort-btn').classList.add('active');
         document.getElementById('asc-sort-btn').classList.remove('active');
         load_character_inventory(api);
+    });
+
+    on_click('add-currency', async () => {
+        const result = await currency_dialog('add');
+        if (!result) return;
+        const session = await api.get_session('character_ck');
+        if (!session.success || !session.data) return;
+        await api.post_wallet_transaction(session.data, result.pp, result.gp, result.sp, result.cp);
+        await load_wallet(api);
+    });
+
+    on_click('subtract-currency', async () => {
+        const result = await currency_dialog('remove');
+        if (!result) return;
+        const session = await api.get_session('character_ck');
+        if (!session.success || !session.data) return;
+        await api.post_wallet_transaction(session.data, -result.pp, -result.gp, -result.sp, -result.cp);
+        await load_wallet(api);
     });
 
 }
@@ -864,4 +883,66 @@ function debounced_transaction(api, inv_ck, character_ck, delta) {
         await api.post_inventory_transaction(inv_ck, character_ck, total);
         await load_character_inventory(api);
     }, 300);
+}
+
+function currency_dialog(mode) {
+    return new Promise((resolve) => {
+        const overlay = document.createElement('div');
+        overlay.className = 'modal-overlay active';
+        overlay.innerHTML = `
+            <div class="modal">
+                <p style="margin:0 0 16px 0;">${mode === 'add' ? 'Add' : 'Remove'} Currency</p>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:20px;">
+                    <div>
+                        <label class="sidebar-label">PP</label>
+                        <input type="text" id="_cur-pp" value="0">
+                    </div>
+                    <div>
+                        <label class="sidebar-label">GP</label>
+                        <input type="text" id="_cur-gp" value="0">
+                    </div>
+                    <div>
+                        <label class="sidebar-label">SP</label>
+                        <input type="text" id="_cur-sp" value="0">
+                    </div>
+                    <div>
+                        <label class="sidebar-label">CP</label>
+                        <input type="text" id="_cur-cp" value="0">
+                    </div>
+                </div>
+                <div style="display:flex; justify-content:flex-end; gap:8px;">
+                    <div class="btn norm-size" id="_cur-confirm">${mode === 'add' ? 'Add' : 'Remove'}</div>
+                    <div class="btn norm-size" style="background:var(--color-ghost); border:1px solid var(--color-ghost-border); color:var(--text-on-ghost);" id="_cur-cancel">Cancel</div>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(overlay);
+
+        overlay.querySelector('#_cur-confirm').addEventListener('click', () => {
+            const pp = parseInt(overlay.querySelector('#_cur-pp').value) || 0;
+            const gp = parseInt(overlay.querySelector('#_cur-gp').value) || 0;
+            const sp = parseInt(overlay.querySelector('#_cur-sp').value) || 0;
+            const cp = parseInt(overlay.querySelector('#_cur-cp').value) || 0;
+            overlay.remove();
+            resolve({ pp, gp, sp, cp });
+        });
+        overlay.querySelector('#_cur-cancel').addEventListener('click', () => {
+            overlay.remove();
+            resolve(null);
+        });
+    });
+}
+
+async function load_wallet(api) {
+    const session = await api.get_session('character_ck');
+    if (!session.success || !session.data) return;
+
+    const response = await api.get_wallet(session.data);
+    if (!response.success) return;
+
+    const w = response.data;
+    document.getElementById('cur-pp').textContent = w.pp ?? 0;
+    document.getElementById('cur-gp').textContent = w.gp ?? 0;
+    document.getElementById('cur-sp').textContent = w.sp ?? 0;
+    document.getElementById('cur-cp').textContent = w.cp ?? 0;
 }
