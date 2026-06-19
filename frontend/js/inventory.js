@@ -468,8 +468,20 @@ async function load_item_details(api, inv_ck) {
         toast('Could not load item details.');
         return;
     }
-
     const item = response.data;
+
+    const stats = item.inv_stats ?
+        (typeof item.inv_stats === 'string' ? JSON.parse(item.inv_stats) : item.inv_stats)
+        : {};
+
+    const stats_html = Object.keys(stats).length > 0
+        ? Object.entries(stats).map(([k, v]) => `
+            <div class="stat-row">
+                <span style="flex:1; font-size:13px; color:var(--text-secondary);">${k}</span>
+                <span style="font-size:13px; color:var(--text-primary);">${v}</span>
+            </div>`).join('')
+        : '<span class="sidebar-label">No stats defined</span>';
+
     document.getElementById('sheet-item-title').textContent = item.inv_name;
     document.getElementById('sheet-detail-view').innerHTML = `
         <div class="form-group">
@@ -491,6 +503,10 @@ async function load_item_details(api, inv_ck) {
         <div class="form-group">
             <span class="sidebar-label">Sub-Inventory</span>
             <span class="sidebar-value">${item.child_ind ? 'Yes' : 'No'}</span>
+        </div>
+        <div class="form-group">
+            <span class="sidebar-label">Stats</span>
+            ${stats_html}
         </div>
     `;
 
