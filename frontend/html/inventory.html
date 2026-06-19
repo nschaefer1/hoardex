@@ -172,7 +172,19 @@
                     
                     <!-- new item form, default hidden -->
                     <div id="sheet-create-form" style="display:none;">
+                <div class="create-form-layout">
 
+                    <!-- LEFT: Icon Panel -->
+                    <div class="create-icon-panel" id="icon-panel">
+                        <div class="create-section-label">Icon</div>
+                        <div class="icon-grid" id="icon-grid"></div>
+                        <div class="icon-panel-hint">Drop a PNG anywhere here</div>
+                    </div>
+
+                    <!-- RIGHT: Fields -->
+                    <div class="create-fields-panel">
+
+                        <div class="create-section-label">Basic Info</div>
                         <div class="form-group">
                             <label class="sidebar-label">Item Name</label>
                             <input type="text" id="create-inv-name" placeholder="e.g. Longsword">
@@ -185,6 +197,10 @@
                             <label class="sidebar-label">Item Type</label>
                             <input type="text" id="create-inv-type" placeholder="e.g. Weapon, Armor, Potion...">
                         </div>
+
+                        <div class="create-section-divider"></div>
+                        <div class="create-section-label">Properties</div>
+
                         <div class="form-group">
                             <label class="sidebar-label">Equip Location</label>
                             <input type="text" id="create-equip-location" placeholder="e.g. Belt, Chest, Hands...">
@@ -194,35 +210,28 @@
                             <input type="text" id="create-weight-lbs" placeholder="e.g. 4">
                         </div>
                         <div class="form-group">
-                            <label class="sidebar-label">Has Sub-Inventory</label>
-                            <div style="display:flex; align-items:center; gap:8px; margin-top:4px;">
-                                <input type="checkbox" id="create-child-ind">
-                                <span class="sidebar-label" style="margin:0;">This item contains its own inventory (e.g. a bag)</span>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="sidebar-label">Icon</label>
-                            <div class="icon-picker" id="icon-picker">
-                                <div class="icon-drop-zone" id="icon-drop-zone">
-                                    <span class="sidebar-label">Drag & drop a PNG here</span>
+                            <div class="create-toggle-row">
+                                <div>
+                                    <span class="sidebar-label">Has Sub-Inventory</span>
+                                    <span class="sidebar-label" style="font-size:11px;">This item contains its own inventory</span>
                                 </div>
-                                <div class="icon-grid" id="icon-grid">
-                                    <!-- populated by JS -->
-                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="create-child-ind">
+                                    <span class="toggle-slider"></span>
+                                </label>
                             </div>
                         </div>
-                        <div class="form-group">
-                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                                <label class="sidebar-label">Stats</label>
-                                <svg id="add-stat-btn" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-btn sm"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
-                            </div>
-                            <div id="stat-rows">
-                                <!-- JS appends rows here -->
-                            </div>
+
+                        <div class="create-section-divider"></div>
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                            <div class="create-section-label" style="margin:0;">Stats</div>
+                            <svg id="add-stat-btn" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-btn sm"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
                         </div>
+                        <div id="stat-rows"></div>
 
                     </div>
-
+                </div>
+            </div>
                     
                 </div>
 

@@ -181,7 +181,7 @@ function reset_create_form() {
 }
 
 function wire_icon_drop_zone(api) {
-    const drop_zone = document.getElementById('icon-drop-zone');
+    const drop_zone = document.getElementById('icon-panel');
 
     drop_zone.addEventListener('dragover', (e) => {
         e.preventDefault();
