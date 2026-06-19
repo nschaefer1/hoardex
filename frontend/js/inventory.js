@@ -46,6 +46,14 @@ function wire_buttons(api) {
     on_click('add-stat-btn', () => add_stat_row());
     on_click('sheet-submit-create', () => sheet_submit_handle(api));
 
+    // Sheet search bar
+    document.getElementById('sheet-search').addEventListener('input', (e) => {
+        const query = e.target.value.trim().toLowerCase();
+        document.querySelectorAll('#sheet-item-list .inv-item').forEach(item => {
+            const name = item.querySelector('.inv-item-name').textContent.toLowerCase();
+            item.style.display = name.includes(query) ? '' : 'none';
+        });
+    });
 }
 
 
@@ -61,6 +69,7 @@ function open_sheet(api) {
     document.getElementById('add-item-overlay').classList.add('active');
     document.getElementById('add-item-sheet').classList.add('active');
     load_icon_grid(api);
+    load_sheet_item_list(api);
 }
 function close_sheet() {
     document.getElementById('add-item-overlay').classList.remove('active');
@@ -68,6 +77,9 @@ function close_sheet() {
 }
 
 function show_create_form() {
+    document.querySelectorAll('#sheet-item-list .inv-item').forEach(i => i.classList.remove('selected'));
+    document.getElementById('sheet-item-title').textContent = 'New Item';
+
     document.getElementById('sheet-detail-view').style.display = 'none';
     document.getElementById('sheet-create-form').style.display = 'block';
 
@@ -143,6 +155,16 @@ async function sheet_submit_handle(api) {
     console.log('Item created successfully.');
     ele.classList.remove('disabled');
     reset_create_form();        // clear out the create form
+    await load_sheet_item_list(api);  // load the sheet detail again
+
+    // Auto-select the newly created item
+    const items = document.querySelectorAll('#sheet-item-list .inv-item');
+    items.forEach(ele => {
+        if (ele.querySelector('.inv-item-name').textContent === inv_name) {
+            ele.click();
+        }
+    });
+    
     show_detail_form();         // show the detail form
 }
 
@@ -271,4 +293,88 @@ async function load_icon_grid(api) {
     const grid = document.getElementById('icon-grid');
     grid.innerHTML = '';
     response.data.forEach(icon_path => add_icon_to_grid(api, icon_path, false));
+}
+
+async function load_sheet_item_list(api) {
+    const response = await api.get_all_inventory_items();
+
+    if (!response.success) {
+        toast('Could not load items')
+        console.error('Could not load items')
+        return;
+    }
+
+    const list = document.getElementById('sheet-item-list');
+    list.innerHTML = '';
+    response.data.forEach(item => {
+        const ele = document.createElement('div');
+        ele.className = 'inv-item';
+        ele.dataset.invCk = item.inv_ck;
+        ele.innerHTML = `
+            <div class="inv-item-icon">
+                <img src="../../${item.icon_path}" alt="">
+            </div>
+            <div class="inv-item-body">
+                <div class="inv-item-name">${item.inv_name}</div>
+                <div class="inv-item-meta">${item.inv_type || ''}</div>
+            </div>
+        `;
+        ele.addEventListener('click', () => {
+            document.querySelectorAll('#sheet-item-list .inv-item').forEach(i => i.classList.remove('selected'));
+            ele.classList.add('selected');
+            load_item_details(api, item.inv_ck);
+        });
+        
+        ele.addEventListener('contextmenu', async (e) => {
+            e.preventDefault();
+            if (await confirm_dialog(`Remove "${item.inv_name}" from the item library? This cannot be undone.`)) {
+                const response = await api.delete_inventory_item(item.inv_ck);
+                if (!response.success) {
+                    toast('Failed to delete item.');
+                    return;
+                }
+                ele.remove();
+                document.getElementById('sheet-detail-view').innerHTML = '';
+                document.getElementById('sheet-item-title').textContent = 'Select an item';
+                show_detail_form();
+            }
+        });
+
+        list.appendChild(ele);
+    });
+}
+
+async function load_item_details(api, inv_ck) {
+    const response = await api.get_inventory_item(inv_ck);
+    if (!response.success) {
+        toast('Could not load item details.');
+        return;
+    }
+
+    const item = response.data;
+    document.getElementById('sheet-item-title').textContent = item.inv_name;
+    document.getElementById('sheet-detail-view').innerHTML = `
+        <div class="form-group">
+            <span class="sidebar-label">Type</span>
+            <span class="sidebar-value">${item.inv_type || '—'}</span>
+        </div>
+        <div class="form-group">
+            <span class="sidebar-label">Description</span>
+            <span class="sidebar-value">${item.inv_desc || '—'}</span>
+        </div>
+        <div class="form-group">
+            <span class="sidebar-label">Equip Location</span>
+            <span class="sidebar-value">${item.equip_location || '—'}</span>
+        </div>
+        <div class="form-group">
+            <span class="sidebar-label">Weight</span>
+            <span class="sidebar-value">${item.weight_lbs != null ? item.weight_lbs + ' lbs' : '—'}</span>
+        </div>
+        <div class="form-group">
+            <span class="sidebar-label">Sub-Inventory</span>
+            <span class="sidebar-value">${item.child_ind ? 'Yes' : 'No'}</span>
+        </div>
+    `;
+
+    show_detail_form();
 }

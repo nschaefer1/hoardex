@@ -15,7 +15,7 @@ class RESTIcon(BaseAPI):
 
     def get_all_icons(self):
         response = self.db_manager.execute(
-            'select icon_path from dim_icon order by icon_path desc;'
+            'select icon_path from dim_icon order by icon_path asc;'
         )
         if not response.success:
             return self._failure_response('Could not retrieve icons')
