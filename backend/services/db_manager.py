@@ -47,17 +47,14 @@ class DBManager:
             if not Alert().confirm("Database was not found relative to executable at data/database.db.\n\nThis is normal on first launch.\n\nCreate blank database?", "Database Not Found"):
                 Alert().info("Cannot open application without database, closing.")
                 sys.exit()
-        # Seed default icons & hash values
-        seed_query = "insert or ignore into dim_icon (icon_path, icon_hash) values (?, ?);"
-        for p in ['frontend/icons/default.png', 'frontend/icons/default_bust.png']:
-            hash_val = IconManager.hash_png(p)
-            self.execute(seed_query, (p, hash_val))
         # Run schema steps
         for f in start_scripts:
             result = self.execute_path(path=f, script=True)
             if not result.success:
                 logger.error(f"Database initialization failed on step {f}")
                 raise RuntimeError("Database initialization failed")
+        # Sync DB and icons
+        IconManager().sync_icons(self)
         # Set singleton variable
         DBManager._schema_initialized = True
      
