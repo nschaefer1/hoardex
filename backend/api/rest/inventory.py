@@ -90,10 +90,27 @@ class RESTInventory(BaseAPI):
             return self._failure_response('Could not add item to inventory.')
         return self._success_response()
     
-
     def get_character_inventory(self, character_ck: int):
         query = "SELECT * FROM vw_character_inventory WHERE character_ck = ?;"
         response = self.db_manager.execute(query, (character_ck,))
         if not response.success:
             return self._failure_response('Could not retrieve inventory.')
         return self._success_response(data=self._format_db_rows(response))
+    
+    def get_wallet(self, character_ck: int):
+        query = "SELECT * FROM vw_wallet WHERE character_ck = ? AND sub_inv_ck IS NULL AND wallet_name = 'On Person';"
+        response = self.db_manager.execute(query, (character_ck,))
+        if not response.success:
+            return self._failure_response('Could not retrieve wallet.')
+        if response.row_count == 0:
+            return self._success_response(data={'pp': 0, 'gp': 0, 'sp': 0, 'cp': 0, 'coin_weight_lbs': 0.0})
+        return self._success_response(data=self._format_db_rows(response)[0])
+
+    def post_wallet_transaction(self, character_ck: int, pp: int = 0, gp: int = 0, sp: int = 0, cp: int = 0, wallet_name: str = 'On Person', sub_inv_ck: int = None):
+        result = self.db_manager.execute(
+            "INSERT INTO ft_wallet (character_ck, wallet_name, sub_inv_ck, pp, gp, sp, cp) VALUES (?, ?, ?, ?, ?, ?, ?);",
+            (character_ck, wallet_name, sub_inv_ck, pp, gp, sp, cp)
+        )
+        if not result.success:
+            return self._failure_response('Could not post wallet transaction.')
+        return self._success_response()
