@@ -89,3 +89,11 @@ class RESTInventory(BaseAPI):
         if not result.success:
             return self._failure_response('Could not add item to inventory.')
         return self._success_response()
+    
+
+    def get_character_inventory(self, character_ck: int):
+        query = "SELECT * FROM vw_character_inventory WHERE character_ck = ?;"
+        response = self.db_manager.execute(query, (character_ck,))
+        if not response.success:
+            return self._failure_response('Could not retrieve inventory.')
+        return self._success_response(data=self._format_db_rows(response))

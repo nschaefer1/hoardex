@@ -99,11 +99,18 @@ MAIN INVENTORY FORMATTING
 }
 
 #inventory-grid {
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
     gap: 12px;
     padding: 16px;
     overflow-y: auto;
+    align-content: start;
+    flex: 1;
+    transition: opacity 0.15s ease;
+}
+
+#inventory-grid.reloading {
+    opacity: 0;
 }
 
 .inv-list {
@@ -113,6 +120,7 @@ MAIN INVENTORY FORMATTING
     padding: 16px;
     overflow-y: auto;
     flex:1;
+    min-height: 0;
 }
 
 .inv-item {
@@ -188,6 +196,7 @@ INVENTORY DRAWER
     background: var(--bg-secondary);
     padding: 0 16px; 
     max-height: 0;
+    flex-shrink: 0;
     overflow: hidden;
     transition: max-height 0.5s ease, padding 0.5s ease;
 }
@@ -196,6 +205,7 @@ INVENTORY DRAWER
     border-top: 1px solid var(--border-glow);
     max-height: 300px;
     padding: 16px;
+    overflow-y: auto;
 }
 
 /* 

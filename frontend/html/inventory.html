@@ -95,7 +95,7 @@
                     <input type="text" id="inventory-search" placeholder="Search items...">
                 </div>
                 <div style="display:flex; align-items:center; gap:4px;">
-                    <svg id="add-item-btn" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-btn"><circle cx="12" cy="12" r="10"/><path d="M8 12h8"/><path d="M12 8v8"/></svg>
+                    <svg id="add-item-btn" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-btn"><circle cx="12" cy="19" r="2"/><circle cx="12" cy="5" r="2"/><circle cx="16" cy="12" r="2"/><circle cx="20" cy="19" r="2"/><circle cx="4" cy="19" r="2"/><circle cx="8" cy="12" r="2"/></svg>
                     <div class="toolbar-sep"></div>
                     <svg id="filter-weapons" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-btn"><path d="m11 19-6-6"/><path d="m5 21-2-2"/><path d="m8 16-4 4"/><path d="M9.5 17.5 21 6V3h-3L6.5 14.5"/></svg>
                     <svg id="filter-armor" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-btn"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m4.243 5.21 14.39 12.472"/></svg>
@@ -110,25 +110,12 @@
             <div class="inv-content">
 
                 <div class="inv-list" id="inventory-grid">
-                    <div class="inv-item" data-inv-ck="1">
-                        <div class="inv-item-icon">
-                            <img src="../icons/default.png" alt="">
-                        </div>
-                        <div class="inv-item-body">
-                            <div class="inv-item-name">Longsword</div>
-                            <div class="inv-item-meta">Weapon · 4 lbs</div>
-                        </div> 
-                        <div class="inv-item-right">
-                            <div class="inv-item-qty">x2</div>
-                            <div class="toolbar-sep"></div>
-                            <div style="display:flex; gap: 6px;">
-                                <svg id="increment-item" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-btn sm"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
-                                <svg id="decrement-item" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-btn sm"><path d="M5 12h14"/></svg>
-                                <svg id="drop-all-item" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-btn sm"><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-                            </div>
-                        </div>
-                    </div>
+
+                    <!-- POPULATED BY JS -->
+                        
                 </div>
+
+
 
                 <div class="inv-drawer" id="item-drawer">
                     <div id="item-drawer-content"></div>
