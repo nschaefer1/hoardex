@@ -127,13 +127,19 @@ async function open_item_drawer(api, item) {
         : `<span class="sidebar-label">No stats defined</span>`;
 
     document.getElementById('item-drawer-content').innerHTML = `
-        <div style="display:flex; gap:16px;">
-            <div class="inv-item-icon" style="width:60px; height:60px; flex-shrink:0;">
-                <img src="../../${data.icon_path}" alt="">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div style="display:flex; gap:16px;">
+                <div class="inv-item-icon" style="width:60px; height:60px; flex-shrink:0;">
+                    <img src="../../${data.icon_path}" alt="">
+                </div>
+                <div>
+                    <div style="font-size:16px; color:var(--text-primary); margin-bottom:4px;">${data.inv_name}</div>
+                    <div style="font-size:12px; color:var(--text-secondary);">${data.inv_type || '—'} ${data.equip_location ? '· ' + data.equip_location : ''}</div>
+                </div>
             </div>
             <div>
-                <div style="font-size:16px; color:var(--text-primary); margin-bottom:4px;">${data.inv_name}</div>
-                <div style="font-size:12px; color:var(--text-secondary);">${data.inv_type || '—'} ${data.equip_location ? '· ' + data.equip_location : ''}</div>
+                <svg id="drawer-edit-btn" data-inv-ck="${data.inv_ck}" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-btn"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></svg>
+                <svg id="drawer-close-btn" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-btn"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
             </div>
         </div>
         <div class="create-section-divider"></div>
@@ -156,6 +162,19 @@ async function open_item_drawer(api, item) {
         ${stats_html}
     `;
 
+    document.getElementById('drawer-edit-btn').addEventListener('click', async () => {
+        await open_sheet(api);
+        
+        const target = document.querySelector(`#sheet-item-list .inv-item[data-inv-ck="${data.inv_ck}"]`);
+        if (target) {
+            target.classList.add('selected');
+            await load_item_details(api, data.inv_ck);  // wait for this
+            show_edit_form_populated();                   // then populate
+        }
+    });
+
+    on_click('drawer-close-btn', () => close_item_drawer());
+
     document.getElementById('item-drawer').classList.add('active');
 }
 function close_item_drawer() {
@@ -163,11 +182,11 @@ function close_item_drawer() {
     document.getElementById('item-drawer').classList.remove('active');
 }
 
-function open_sheet(api) {
+async function open_sheet(api) {
     document.getElementById('add-item-overlay').classList.add('active');
     document.getElementById('add-item-sheet').classList.add('active');
-    load_icon_grid(api);
-    load_sheet_item_list(api);
+    await load_icon_grid(api);
+    await load_sheet_item_list(api);
 }
 function close_sheet(api) {
     document.getElementById('add-item-overlay').classList.remove('active');
@@ -300,7 +319,8 @@ function add_stat_row() {
 function get_stats() {
     const stats = {};
     document.querySelectorAll('.stat-row').forEach(row => {
-        const inputs = row.querySelectorAll('input');
+        const inputs = row.querySelectorAll('input[type="text"]');
+        if (inputs.length < 2) return;
         const key = inputs[0].value.trim();
         const val = inputs[1].value.trim();
         if (key) stats[key] = val;
@@ -469,6 +489,9 @@ async function load_item_details(api, inv_ck) {
         return;
     }
     const item = response.data;
+
+    const list_ele = document.querySelector(`#sheet-item-list .inv-item[data-inv-ck="${inv_ck}"]`);
+    if (list_ele) list_ele._item_data = item;
 
     const stats = item.inv_stats ?
         (typeof item.inv_stats === 'string' ? JSON.parse(item.inv_stats) : item.inv_stats)
