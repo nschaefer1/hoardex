@@ -236,7 +236,12 @@
                 </div>
 
                 <div class="sheet-detail-footer">
-                    <div id="sheet-detail-default">
+                    <div id="sheet-detail-default" style="display:flex; align-items:center; gap:8px;">
+                        <div class="qty-stepper" title="Double click me">
+                            <div class="qty-btn" id="qty-down">−</div>
+                            <span class="qty-value" id="add-qty-input">1</span>
+                            <div class="qty-btn" id="qty-up">+</div>
+                        </div>
                         <div class="btn norm-size disabled" id="sheet-add-btn">Add to Inventory</div>
                     </div>
                     <div id="sheet-detail-add-footer" style="display:none;">

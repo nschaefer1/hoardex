@@ -1,3 +1,5 @@
+let qty = 1;        // quantity variable tied to the counter
+
 // =====================================================
 // ENTRY POINT
 // =====================================================
@@ -59,6 +61,42 @@ function wire_buttons(api) {
     // Apply changes to item
     on_click('sheet-apply-changes', () => sheet_apply_changes_handle(api));
 
+    // Add item to inventory button
+    on_click('sheet-add-btn', () => sheet_add_to_inventory_handle(api));
+    on_click('qty-up', () => {
+        qty = parseInt(document.getElementById('add-qty-input').textContent) || 1;
+        qty = Math.min(qty + 1, 99999);
+        document.getElementById('add-qty-input').textContent = qty;
+    });
+
+    on_click('qty-down', () => {
+        qty = parseInt(document.getElementById('add-qty-input').textContent) || 1;
+        qty = Math.max(qty - 1, 1);
+        document.getElementById('add-qty-input').textContent = qty;
+    });
+
+    document.getElementById('add-qty-input').addEventListener('dblclick', () => {
+        const ele = document.getElementById('add-qty-input');
+        ele.contentEditable = 'true';
+        ele.focus();
+        document.execCommand('selectAll');
+    });
+
+    document.getElementById('add-qty-input').addEventListener('blur', () => {
+        const ele = document.getElementById('add-qty-input');
+        ele.contentEditable = 'false';
+        const val = parseInt(ele.textContent);
+        qty = isNaN(val) || val < 1 ? 1 : Math.min(val, 99999);
+        ele.textContent = qty;
+    });
+
+    document.getElementById('add-qty-input').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            document.getElementById('add-qty-input').blur();
+        }
+    });
+
 }
 
 
@@ -79,6 +117,8 @@ function open_sheet(api) {
 function close_sheet() {
     document.getElementById('add-item-overlay').classList.remove('active');
     document.getElementById('add-item-sheet').classList.remove('active');
+    qty = 1;
+    document.getElementById('add-qty-input').textContent = 1;
     
     // Disable edit capabilities
     document.getElementById('item-edit-btn').classList.add('disabled');
@@ -89,6 +129,7 @@ function close_sheet() {
 
     // Show the details
     show_detail_form();
+    document.getElementById('sheet-add-btn').classList.add('disabled');
 }
 
 function show_create_form() {
@@ -103,6 +144,7 @@ function show_create_form() {
     document.getElementById('sheet-detail-add-footer').style.display = 'block';
 
     document.getElementById('item-edit-btn').classList.add('disabled');
+    document.getElementById('sheet-add-btn').classList.add('disabled');
 }
 function show_edit_form() {
     document.getElementById('sheet-detail-view').style.display = 'none';
@@ -116,7 +158,7 @@ function show_detail_form() {
     document.getElementById('sheet-detail-view').style.display = 'block';
     document.getElementById('sheet-create-form').style.display = 'none';
 
-    document.getElementById('sheet-detail-default').style.display = 'block';
+    document.getElementById('sheet-detail-default').style.display = 'flex';
     document.getElementById('sheet-detail-edit-footer').style.display = 'none';
     document.getElementById('sheet-detail-add-footer').style.display = 'none';
 }
@@ -397,6 +439,7 @@ async function load_item_details(api, inv_ck) {
 
     show_detail_form();
     document.getElementById('item-edit-btn').classList.remove('disabled');
+    document.getElementById('sheet-add-btn').classList.remove('disabled');
 }
 
 function show_edit_form_populated() {
@@ -494,4 +537,33 @@ async function sheet_apply_changes_handle(api) {
     ele.classList.remove('disabled');
     await load_sheet_item_list(api);
     await load_item_details(api, inv_ck);
+}
+
+async function sheet_add_to_inventory_handle(api) {
+    const selected = document.querySelector('#sheet-item-list .inv-item.selected');
+    if (!selected) return;
+
+    const inv_ck = parseInt(selected.dataset.invCk);
+    const qty = parseInt(document.getElementById('add-qty-input').textContent) || 1;
+
+    const ele = document.getElementById('sheet-add-btn');
+    ele.classList.add('disabled');
+
+    const character_ck = await api.get_session('character_ck');
+    if (!character_ck.success || !character_ck.data) {
+        toast("No character selected");
+        ele.classList.remove('disabled');
+        return;
+    }
+
+    const response = await api.post_inventory_transaction(inv_ck, character_ck.data, qty);
+    if (!response.success) {
+        toast('Failed to add item to inventory.');
+        ele.classList.remove('disabled');
+        return;
+    }
+
+    toast(`Added ${qty}x to inventory.`);
+    ele.classList.remove('disabled');
+    // close_sheet();
 }

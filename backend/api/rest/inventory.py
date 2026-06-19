@@ -79,3 +79,13 @@ class RESTInventory(BaseAPI):
         if not result.success:
             return self._failure_response('Could not update item.')
         return self._success_response()
+    
+    def post_inventory_transaction(self, inv_ck: int, character_ck: int, val: int):
+        # character_ck would come from session/state later
+        result = self.db_manager.execute(
+            "INSERT INTO ft_inventory (inv_ck, character_ck, val) VALUES (?, ?, ?);",
+            (inv_ck, character_ck, val)
+        )
+        if not result.success:
+            return self._failure_response('Could not add item to inventory.')
+        return self._success_response()
