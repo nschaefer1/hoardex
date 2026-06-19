@@ -1,0 +1,11 @@
+inv_name,inv_desc,inv_type,equip_location,weight_lbs,child_ind
+Longsword,A standard steel longsword,Weapon,Hand,4,0
+Leather Armor,Basic leather armor,Armor,Body,15,0
+Healing Potion,Restores 1d8+1 HP when consumed,Consumable,,0.1,0
+Backpack,A sturdy adventuring backpack,Gear,Back,2,1
+Rope (50ft),Hempen rope 50 feet long,Gear,,10,0
+Torch,Burns for 1 hour,Consumable,,1,0
+Shortsword,A light one-handed blade,Weapon,Hand,2,0
+Shield,A wooden shield,Armor,Hand,5,0
+Thieves Tools,Tools for picking locks,Gear,,1,0
+Rations (1 day),One day of trail rations,Consumable,,1,0
