@@ -48,9 +48,25 @@ create table if not exists ft_inventory (
     inv_ck integer not null,
     character_ck integer not null,
     val integer not null,
+    sub_inv_ck integer,
+    dropped integer default 0 check(dropped in (0, 1)),
 
-foreign key (inv_ck) references dim_inventory(inv_ck) on delete cascade,
-    foreign key (character_ck) references dim_character(character_ck) on delete cascade
+    foreign key (inv_ck) references dim_inventory(inv_ck) on delete cascade,
+    foreign key (character_ck) references dim_character(character_ck) on delete cascade,
+    foreign key (sub_inv_ck) references dim_inventory(inv_ck) on delete set null
 );
 create index if not exists idx_fi_inv_ck on ft_inventory (inv_ck);
 create index if not exists idx_fi_character_ck on ft_inventory (character_ck);
+
+create table if not exists ft_wallet (
+    wallet_trans_ck integer primary key not null,
+    character_ck integer not null,
+    wallet_name text not null default 'On Person',
+    sub_inv_ck integer,
+    pp integer default 0,
+    gp integer default 0,
+    sp integer default 0,
+    cp integer default 0,
+    foreign key (character_ck) references dim_character(character_ck) on delete cascade,
+    foreign key (sub_inv_ck) references dim_inventory(inv_ck) on delete set null
+);
