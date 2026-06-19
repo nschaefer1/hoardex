@@ -212,25 +212,37 @@ function wire_icon_drop_zone(api) {
                 toast('Icon upload failed.');
                 return;
             }
-            add_icon_to_grid(response.data.icon_path, true);
+            add_icon_to_grid(api, response.data.icon_path, true);
         };
         reader.readAsDataURL(file);
     });
 }
 
-function add_icon_to_grid(icon_path, auto_select = false) {
+function add_icon_to_grid(api, icon_path, auto_select = false) {
     const grid = document.getElementById('icon-grid');
 
     let option = grid.querySelector(`[data-path="${icon_path}"]`);
 
     if (!option) {
-        const option = document.createElement('div');
+        option = document.createElement('div');
         option.className = 'icon-option';
         option.dataset.path = icon_path;
         option.innerHTML = `<img src="../../${icon_path}" alt="">`;
         option.addEventListener('click', () => {
             document.querySelectorAll('.icon-option').forEach(i => i.classList.remove('selected'));
             option.classList.add('selected');
+        });
+
+        option.addEventListener('contextmenu', async (e) => {
+            e.preventDefault();
+            if (await confirm_dialog('Delete this icon? This cannot be undone.')) {
+                const response = await api.delete_icon(icon_path);
+                if (!response.success) {
+                    toast('Failed to delete icon.');
+                    return;
+                }
+                option.remove();
+            }
         });
         grid.appendChild(option);
     }
@@ -258,5 +270,5 @@ async function load_icon_grid(api) {
 
     const grid = document.getElementById('icon-grid');
     grid.innerHTML = '';
-    response.data.forEach(icon_path => add_icon_to_grid(icon_path, false));
+    response.data.forEach(icon_path => add_icon_to_grid(api, icon_path, false));
 }

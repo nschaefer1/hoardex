@@ -38,32 +38,6 @@ function on_click(id, handler) {
     return ele;
 }
 
-function confirm_popup(message, title = 'Are you sure?') {
-    return new Promise(resolve => {
-        const popup = document.getElementById('confirm-popup');
-        document.getElementById('confirm-popup-title').textContent = title;
-        document.getElementById('confirm-popup-message').textContent = message;
-        
-        const ok_btn = document.getElementById('confirm-popup-ok');
-        const cancel_btn = document.getElementById('confirm-popup-cancel');
-        
-        function cleanup(result) {
-            popup.classList.remove('show');
-            ok_btn.removeEventListener('click', on_ok);
-            cancel_btn.removeEventListener('click', on_cancel);
-            resolve(result);
-        }
-        
-        function on_ok() { cleanup(true); }
-        function on_cancel() { cleanup(false); }
-        
-        ok_btn.addEventListener('click', on_ok);
-        cancel_btn.addEventListener('click', on_cancel);
-        
-        popup.classList.add('show');
-    });
-}
-
 // Zoom controls
 let zoom = 1.0;
 

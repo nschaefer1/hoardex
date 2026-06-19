@@ -3,7 +3,7 @@ logger = logging.getLogger(__name__)
 
 import base64
 import hashlib
-import shutil
+import os
 from pathlib import Path
 
 from .base import APIResponse, BaseAPI
@@ -71,3 +71,21 @@ class RESTIcon(BaseAPI):
 
         return self._success_response(data = {'icon_path':icon_path_str})
     
+    def delete_icon(self, icon_path):
+        defaults = ['frontend/icons/default.png', 'frontend/icons/default_bust.png']
+        if icon_path in defaults:
+            return self._failure_response('Cannot delete default icons.')
+        
+        try:
+            if os.path.exists(icon_path):
+                os.remove(icon_path)
+        except Exception as e:
+            return self._failure_response("Could not delete icon file")
+        
+        result = self.db_manager.execute(
+            "delete from dim_icon where icon_path = ?;", (icon_path,)
+        )
+
+        if not result.success:
+            return self._failure_response("Could not delete icon from database")
+        return self._success_response()

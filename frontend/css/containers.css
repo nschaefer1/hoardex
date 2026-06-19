@@ -53,7 +53,7 @@ MAIN CONTAINERS
     position: fixed;
     inset: 0;
     background: rgba(0,0,0,0.6);
-    z-index:200;
+    z-index:999;
     justify-content: center;
     align-items: center;
 }
