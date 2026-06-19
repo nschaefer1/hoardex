@@ -39,6 +39,7 @@ function wire_buttons(api) {
 
     // New item rendering in the HTML
     on_click('item-creation-btn', () => show_create_form());
+    on_click('close-sheet-layout', () => close_sheet());
 
     // Item details button handling
     on_click('add-stat-btn', () => add_stat_row());
