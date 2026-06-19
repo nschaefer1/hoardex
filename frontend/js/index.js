@@ -42,6 +42,7 @@ async function load_characters(api) {
 function build_bust(character, large) {
     const sizeClass = large ? 'char-bust large' : 'char-bust';
     const icon = character.icon_path ? `../../../../${character.icon_path}` : '../icons/default_bust.png';
+    console.log(icon);
     return `
         <div class="${sizeClass}" data-ck="${character.character_ck}" data-name="${character.character_name}">
             <img class="bust-icon" src="'${icon}" width="100%" height="100%" style="object-fit:cover;">

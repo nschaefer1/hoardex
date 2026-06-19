@@ -10,6 +10,7 @@ window.addEventListener('pywebviewready', () => {
 async function init(api) {
     // Placeholder
     wire_buttons(api);
+    wire_icon_drop_zone(api);
 }
 
 function wire_buttons(api) {
@@ -34,7 +35,7 @@ function wire_buttons(api) {
     });
 
     // Add item to inventory button
-    on_click('add-item-btn', () => open_sheet());
+    on_click('add-item-btn', () => open_sheet(api));
     on_click('add-item-overlay', () => close_sheet());
 
     // New item rendering in the HTML
@@ -56,9 +57,10 @@ function close_item_drawer() {
     document.getElementById('item-drawer').classList.remove('active');
 }
 
-function open_sheet() {
+function open_sheet(api) {
     document.getElementById('add-item-overlay').classList.add('active');
     document.getElementById('add-item-sheet').classList.add('active');
+    load_icon_grid(api);
 }
 function close_sheet() {
     document.getElementById('add-item-overlay').classList.remove('active');
@@ -178,9 +180,83 @@ function reset_create_form() {
     document.querySelectorAll('.icon-option').forEach(i => i.classList.remove('selected'));
 }
 
+function wire_icon_drop_zone(api) {
+    const drop_zone = document.getElementById('icon-drop-zone');
+
+    drop_zone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        drop_zone.classList.add('dragover');
+    });
+
+    drop_zone.addEventListener('dragleave', () => {
+        drop_zone.classList.remove('dragover');
+    });
+
+    drop_zone.addEventListener('drop', async (e) => {
+        e.preventDefault();
+        drop_zone.classList.remove('dragover');
+
+        const file = e.dataTransfer.files[0];
+        if (!file) return;
+
+        if (file.type !== 'image/png') {
+            toast('Only PNG files are supported');
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = async () => {
+            const base64 = reader.result.split(',')[1];
+            const response = await api.post_icon(file.name, base64);
+            if (!response.success) {
+                toast('Icon upload failed.');
+                return;
+            }
+            add_icon_to_grid(response.data.icon_path, true);
+        };
+        reader.readAsDataURL(file);
+    });
+}
+
+function add_icon_to_grid(icon_path, auto_select = false) {
+    const grid = document.getElementById('icon-grid');
+
+    let option = grid.querySelector(`[data-path="${icon_path}"]`);
+
+    if (!option) {
+        const option = document.createElement('div');
+        option.className = 'icon-option';
+        option.dataset.path = icon_path;
+        option.innerHTML = `<img src="../../${icon_path}" alt="">`;
+        option.addEventListener('click', () => {
+            document.querySelectorAll('.icon-option').forEach(i => i.classList.remove('selected'));
+            option.classList.add('selected');
+        });
+        grid.appendChild(option);
+    }
+
+    if (auto_select) {
+        document.querySelectorAll('.icon-option').forEach(i => i.classList.remove('selected'));
+        option.classList.add('selected');
+    }
+}
+
 function toast(message, duration = 2500) {
     let t = document.getElementById('toast');
     t.innerText = message;
     t.classList.add('active');
     setTimeout(() => t.classList.remove('active'), duration);
+}
+
+async function load_icon_grid(api) {
+    const response = await api.get_all_icons();
+    console.log(response);
+    if (!response.success) {
+        toast('Could not load icons')
+        return;
+    }
+
+    const grid = document.getElementById('icon-grid');
+    grid.innerHTML = '';
+    response.data.forEach(icon_path => add_icon_to_grid(icon_path, false));
 }

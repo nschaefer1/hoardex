@@ -28,11 +28,13 @@ from .rest import (
     APIResponse,
     RESTCharacter,
     RESTInventory,
+    RESTIcon,
 )
 
 class API(
     RESTCharacter,      # Character table controls
     RESTInventory,      # Inventory item calls
+    RESTIcon,           # Icon Management
 ):
 
     def __init__(self, db_manager):
