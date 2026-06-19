@@ -1,6 +1,7 @@
 let qty = 1;        // quantity variable tied to the counter
 let pending_inc = {};   // prevents conflicts with button spams on the inventory panel screen
 let inc_timers = {};
+let sort_dir = 'asc';
 
 // =====================================================
 // ENTRY POINT
@@ -102,6 +103,27 @@ function wire_buttons(api) {
         }
     });
 
+    document.getElementById('inventory-search').addEventListener('input', (e) => {
+        const query = e.target.value.trim().toLowerCase();
+        document.querySelectorAll('#inventory-grid .inv-item').forEach(item => {
+            const name = item.querySelector('.inv-item-name').textContent.toLowerCase();
+            item.style.display = name.includes(query) ? '' : 'none';
+        });
+    });
+
+    on_click('asc-sort-btn', () => {
+        sort_dir = 'asc';
+        document.getElementById('asc-sort-btn').classList.add('active');
+        document.getElementById('desc-sort-btn').classList.remove('active');
+        load_character_inventory(api);
+    });
+    on_click('desc-sort-btn', () => {
+        sort_dir = 'desc';
+        document.getElementById('desc-sort-btn').classList.add('active');
+        document.getElementById('asc-sort-btn').classList.remove('active');
+        load_character_inventory(api);
+    });
+
 }
 
 
@@ -185,6 +207,7 @@ function close_item_drawer() {
 async function open_sheet(api) {
     document.getElementById('add-item-overlay').classList.add('active');
     document.getElementById('add-item-sheet').classList.add('active');
+    await close_item_drawer();
     await load_icon_grid(api);
     await load_sheet_item_list(api);
 }
@@ -677,6 +700,10 @@ async function load_character_inventory(api) {
         toast('Could not load inventory.');
         return;
     }
+    response.data.sort((a, b) => {
+        const cmp = a.inv_name.toLowerCase().localeCompare(b.inv_name.toLowerCase());
+        return sort_dir === 'asc' ? cmp : -cmp;
+    });
 
     grid.innerHTML = '';
     
@@ -704,6 +731,19 @@ async function load_character_inventory(api) {
         `;
         grid.appendChild(ele);
     });
+
+    const total_weight = response.data.reduce((sum, item) => {
+        return sum + ((item.weight_lbs || 0) * item.quantity);
+    }, 0);
+    document.getElementById('char-weight').textContent = `${total_weight.toFixed(1)} lbs`;
+    
+    const query = document.getElementById('inventory-search').value.trim().toLowerCase();
+    if (query) {
+        document.querySelectorAll('#inventory-grid .inv-item').forEach(item => {
+            const name = item.querySelector('.inv-item-name').textContent.toLowerCase();
+            item.style.display = name.includes(query) ? '' : 'none';
+        });
+    }
 
     grid.classList.remove('reloading');
 }

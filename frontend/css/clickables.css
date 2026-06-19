@@ -56,6 +56,10 @@ GENERIC BUTTONS
     height: 16px;
 }
 
+.icon-btn.active {
+    color: var(--color-primary);
+}
+
 
 
 
