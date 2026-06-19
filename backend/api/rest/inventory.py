@@ -61,5 +61,21 @@ class RESTInventory(BaseAPI):
             return self._success_response()
         return self._failure_response(f'Database could not submit the item: {response}')
 
+    def put_inventory_item(self, inv_ck: int, fields: dict):
+        allowed = {'inv_name', 'inv_desc', 'inv_type', 'equip_location', 'weight_lbs', 'child_ind', 'inv_stats', 'icon_path'}
+        invalid = set(fields.keys()) - allowed
+        if invalid:
+            return self._failure_response(f'Invalid fields: {invalid}')
 
-    
+        if 'inv_stats' in fields:
+            fields['inv_stats'] = json.dumps(fields['inv_stats']) if fields['inv_stats'] else None
+
+        set_clause = ', '.join(f"{k} = ?" for k in fields)
+        params = (*fields.values(), inv_ck)
+        result = self.db_manager.execute(
+            f"UPDATE dim_inventory SET {set_clause} WHERE inv_ck = ?;",
+            params
+        )
+        if not result.success:
+            return self._failure_response('Could not update item.')
+        return self._success_response()

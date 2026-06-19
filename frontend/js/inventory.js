@@ -45,6 +45,7 @@ function wire_buttons(api) {
     // Item details button handling
     on_click('add-stat-btn', () => add_stat_row());
     on_click('sheet-submit-create', () => sheet_submit_handle(api));
+    on_click('item-edit-btn', () => show_edit_form_populated());
 
     // Sheet search bar
     document.getElementById('sheet-search').addEventListener('input', (e) => {
@@ -54,6 +55,10 @@ function wire_buttons(api) {
             item.style.display = name.includes(query) ? '' : 'none';
         });
     });
+
+    // Apply changes to item
+    on_click('sheet-apply-changes', () => sheet_apply_changes_handle(api));
+
 }
 
 
@@ -74,6 +79,16 @@ function open_sheet(api) {
 function close_sheet() {
     document.getElementById('add-item-overlay').classList.remove('active');
     document.getElementById('add-item-sheet').classList.remove('active');
+    
+    // Disable edit capabilities
+    document.getElementById('item-edit-btn').classList.add('disabled');
+
+    // Remove detail views
+    document.getElementById('sheet-item-title').textContent = 'Select an item'
+    document.getElementById('sheet-detail-view').innerHTML = ''
+
+    // Show the details
+    show_detail_form();
 }
 
 function show_create_form() {
@@ -86,13 +101,15 @@ function show_create_form() {
     document.getElementById('sheet-detail-default').style.display = 'none';
     document.getElementById('sheet-detail-edit-footer').style.display = 'none';
     document.getElementById('sheet-detail-add-footer').style.display = 'block';
+
+    document.getElementById('item-edit-btn').classList.add('disabled');
 }
 function show_edit_form() {
     document.getElementById('sheet-detail-view').style.display = 'none';
     document.getElementById('sheet-create-form').style.display = 'block';
 
     document.getElementById('sheet-detail-default').style.display = 'none';
-    document.getElementById('sheet-detail-edit-footer').style.display = 'block';
+    document.getElementById('sheet-detail-edit-footer').style.display = 'flex';
     document.getElementById('sheet-detail-add-footer').style.display = 'none';
 }
 function show_detail_form() {
@@ -164,7 +181,7 @@ async function sheet_submit_handle(api) {
             ele.click();
         }
     });
-    
+
     show_detail_form();         // show the detail form
 }
 
@@ -264,6 +281,7 @@ function add_icon_to_grid(api, icon_path, auto_select = false) {
                     return;
                 }
                 option.remove();
+                await load_sheet_item_list(api);
             }
         });
         grid.appendChild(option);
@@ -310,6 +328,7 @@ async function load_sheet_item_list(api) {
         const ele = document.createElement('div');
         ele.className = 'inv-item';
         ele.dataset.invCk = item.inv_ck;
+        ele._item_data = item;
         ele.innerHTML = `
             <div class="inv-item-icon">
                 <img src="../../${item.icon_path}" alt="">
@@ -377,4 +396,102 @@ async function load_item_details(api, inv_ck) {
     `;
 
     show_detail_form();
+    document.getElementById('item-edit-btn').classList.remove('disabled');
+}
+
+function show_edit_form_populated() {
+    const selected = document.querySelector('#sheet-item-list .inv-item.selected');
+    if (!selected) return;
+
+    const inv_ck = selected.dataset.invCk;
+
+    // Grab current values from the detail view
+    const title = document.getElementById('sheet-item-title').textContent;
+
+    // We need the full item data — store it on the element
+    const item = selected._item_data;
+    if (!item) return;
+
+    document.getElementById('create-inv-name').value = item.inv_name || '';
+    document.getElementById('create-inv-desc').value = item.inv_desc || '';
+    document.getElementById('create-inv-type').value = item.inv_type || '';
+    document.getElementById('create-equip-location').value = item.equip_location || '';
+    document.getElementById('create-weight-lbs').value = item.weight_lbs || '';
+    document.getElementById('create-child-ind').checked = item.child_ind === 1;
+    document.getElementById('stat-rows').innerHTML = '';
+
+    if (item.inv_stats) {
+        const stats = typeof item.inv_stats === 'string' ? JSON.parse(item.inv_stats) : item.inv_stats;
+        Object.entries(stats).forEach(([key, val]) => {
+            add_stat_row_populated(key, val);
+        });
+    }
+
+    show_edit_form();
+}
+
+function add_stat_row_populated(key = '', val = '') {
+    const row = document.createElement('div');
+    row.className = 'stat-row';
+    row.innerHTML = `
+        <input type="text" placeholder="Stat name" value="${key}">
+        <input type="text" placeholder="Value" value="${val}">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-btn sm"><path d="M18 6L6 18"/><path d="M6 6l12 12"/></svg>
+    `;
+    row.querySelector('svg').addEventListener('click', () => row.remove());
+    document.getElementById('stat-rows').appendChild(row);
+}
+
+async function sheet_apply_changes_handle(api) {
+    const ele = document.getElementById('sheet-apply-changes');
+    ele.classList.add('disabled');
+
+    const selected = document.querySelector('#sheet-item-list .inv-item.selected');
+    if (!selected) return;
+    const inv_ck = parseInt(selected.dataset.invCk);
+
+    const inv_name = document.getElementById('create-inv-name').value.trim();
+    if (!inv_name) {
+        toast('Item name cannot be blank');
+        ele.classList.remove('disabled');
+        return;
+    }
+
+    const weight_lbs = document.getElementById('create-weight-lbs').value.trim() || null;
+    if (weight_lbs !== null && isNaN(parseFloat(weight_lbs))) {
+        toast('Weight must be a number');
+        ele.classList.remove('disabled');
+        return;
+    }
+
+    const stats = get_stats();
+    for (const [key, val] of Object.entries(stats)) {
+        if (isNaN(parseFloat(val))) {
+            toast(`Stat "${key}" must be a number`);
+            ele.classList.remove('disabled');
+            return;
+        }
+    }
+
+    const response = await api.put_inventory_item(inv_ck, {
+        inv_name,
+        inv_desc: document.getElementById('create-inv-desc').value.trim() || null,
+        inv_type: document.getElementById('create-inv-type').value.trim() || null,
+        equip_location: document.getElementById('create-equip-location').value.trim() || null,
+        weight_lbs: weight_lbs ? parseFloat(weight_lbs) : null,
+        child_ind: document.getElementById('create-child-ind').checked ? 1 : 0,
+        inv_stats: stats,
+        icon_path: document.querySelector('.icon-option.selected')?.dataset.path || null,
+    });
+
+    if (!response.success) {
+        toast('Failed to apply changes');
+        console.error('Apply changes failed:', response.message);
+        ele.classList.remove('disabled');
+        return;
+    }
+
+    ele.classList.remove('disabled');
+    await load_sheet_item_list(api);
+    await load_item_details(api, inv_ck);
 }

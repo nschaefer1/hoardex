@@ -34,7 +34,6 @@ create table if not exists dim_inventory (
     inv_type text,
     equip_location text,
 
-    rarity text,
     icon_path text default 'frontend/icons/default.png',
     weight_lbs float,             -- changing into float due to weight element
 
