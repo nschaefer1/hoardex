@@ -17,10 +17,12 @@ class MainApp:
         self.window = webview.create_window(
             'Application Name',
             f'file:///{index_html}',
-            width=1200,
-            height=800,
+            width=1400,
+            height=900,
             js_api=self.api,
             text_select=True,
+            x = 20,
+            y = 20,
         )
 
     def app_path(self, relative_path):
