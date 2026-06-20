@@ -11,6 +11,119 @@
 
     <link rel="stylesheet" href="../css/inventory.css">
 </head>
+
+<!-- Character Edit Slide-Over -->
+<div class="slide-over-overlay" id="char-edit-overlay"></div>
+<div class="slide-over" id="char-edit-panel">
+    <div class="slide-over-header">
+        <span class="sidebar-value" id="char-edit-title">Character</span>
+        <svg id="char-edit-close" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-btn"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+    </div>
+
+    <div class="slide-over-body">
+        <div class="create-form-layout">
+
+            <!-- LEFT: Icon -->
+            <div class="create-icon-panel" id="char-icon-panel">
+                <div class="create-section-label">Icon</div>
+                <div class="icon-grid" id="char-icon-grid"></div>
+                <div class="icon-panel-hint">Drop a PNG anywhere here</div>
+            </div>
+
+            <!-- RIGHT: Fields -->
+            <div class="create-fields-panel">
+
+                <div class="create-section-label">Ability Scores</div>
+                <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-bottom:14px;">
+                    <div>
+                        <label class="sidebar-label">STR</label>
+                        <input type="text" id="char-str" placeholder="10">
+                    </div>
+                    <div>
+                        <label class="sidebar-label">DEX</label>
+                        <input type="text" id="char-dex" placeholder="10">
+                    </div>
+                    <div>
+                        <label class="sidebar-label">CON</label>
+                        <input type="text" id="char-con" placeholder="10">
+                    </div>
+                    <div>
+                        <label class="sidebar-label">INT</label>
+                        <input type="text" id="char-int" placeholder="10">
+                    </div>
+                    <div>
+                        <label class="sidebar-label">WIS</label>
+                        <input type="text" id="char-wis" placeholder="10">
+                    </div>
+                    <div>
+                        <label class="sidebar-label">CHA</label>
+                        <input type="text" id="char-cha" placeholder="10">
+                    </div>
+                </div>
+
+                <div class="create-section-divider"></div>
+                <div class="create-section-label">Physical</div>
+
+                <div class="form-group">
+                    <label class="sidebar-label">Leg Count</label>
+                    <input type="text" id="char-leg-count" placeholder="2">
+                </div>
+
+                <div class="form-group">
+                    <label class="sidebar-label">Size Category</label>
+                    <select id="char-size-cat">
+                        <option value="Fine">Fine</option>
+                        <option value="Diminutive">Diminutive</option>
+                        <option value="Tiny">Tiny</option>
+                        <option value="Small">Small</option>
+                        <option value="Medium" selected>Medium</option>
+                        <option value="Large">Large</option>
+                        <option value="Huge">Huge</option>
+                        <option value="Gargantuan">Gargantuan</option>
+                        <option value="Colossal">Colossal</option>
+                    </select>
+                </div> 
+
+                <div class="create-section-divider"></div>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                    <div class="create-section-label" style="margin:0;">Encumbrance Bands</div>
+                    <div class="btn" style="font-size:12px; padding:4px 10px;" id="char-populate-bands">Populate Estimated</div>
+                </div>
+
+                <div class="form-group">
+                    <label class="sidebar-label">Light (lbs)</label>
+                    <input type="text" id="char-band-light" placeholder="0">
+                </div>
+                <div class="form-group">
+                    <label class="sidebar-label">Medium (lbs)</label>
+                    <input type="text" id="char-band-medium" placeholder="0">
+                </div>
+                <div class="form-group">
+                    <label class="sidebar-label">Heavy (lbs)</label>
+                    <input type="text" id="char-band-heavy" placeholder="0">
+                </div>
+
+                <div class="create-toggle-row">
+                    <div>
+                        <span class="sidebar-label">Override Bands</span>
+                        <span class="sidebar-label" style="font-size:11px;">Manually set encumbrance thresholds</span>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="char-band-override">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="slide-over-footer">
+        <div class="btn norm-size" id="char-save-btn">Save Changes</div>
+    </div>
+</div>
+
+
 <body>
 
     <div class="page-layout">
@@ -22,7 +135,7 @@
                     <div class="bust-icon">
                         <img src="../icons/default_bust.png" width="100%" height="100%" style="object-fit:cover;" alt="">
                     </div>
-                    <div class="bust-name" id="sidebar-char-name">Character Name</div>
+                    <div class="bust-name" id="sidebar-char-name"></div>
                 </div>
 
                 <div class="v-spacer" style="height:16px;"></div>

@@ -19,6 +19,7 @@ async function init(api) {
     await load_character_inventory(api);
     wire_inventory_buttons(api);
     load_wallet(api);
+    await load_character_sidebar(api);
 }
 
 function wire_buttons(api) {
@@ -132,6 +133,7 @@ function wire_buttons(api) {
         if (!session.success || !session.data) return;
         await api.post_wallet_transaction(session.data, result.pp, result.gp, result.sp, result.cp);
         await load_wallet(api);
+        await load_character_inventory(api);
     });
 
     on_click('subtract-currency', async () => {
@@ -141,8 +143,68 @@ function wire_buttons(api) {
         if (!session.success || !session.data) return;
         await api.post_wallet_transaction(session.data, -result.pp, -result.gp, -result.sp, -result.cp);
         await load_wallet(api);
+        await load_character_inventory(api);
     });
 
+    on_click('admin-btn', () => open_char_edit(api));
+    on_click('char-edit-overlay', () => close_char_edit());
+    on_click('char-edit-close', () => close_char_edit());
+
+    on_click('char-populate-bands', () => {
+        const str = parseInt(document.getElementById('char-str').value) || 10;
+        const legs = parseInt(document.getElementById('char-leg-count').value) || 2;
+        const size = document.getElementById('char-size-cat')?.value || 'Medium';
+        const bands = calc_pf1_bands(str, legs, size);
+        document.getElementById('char-band-light').value = bands.light;
+        document.getElementById('char-band-medium').value = bands.medium;
+        document.getElementById('char-band-heavy').value = bands.heavy;
+    });
+
+    on_click('char-save-btn', async () => {
+        const session = await api.get_session('character_ck');
+        if (!session.success || !session.data) return;
+
+        const ele = document.getElementById('char-save-btn');
+        ele.classList.add('disabled');
+
+        const stat_scores = {
+            str: parseInt(document.getElementById('char-str').value) || 0,
+            dex: parseInt(document.getElementById('char-dex').value) || 0,
+            con: parseInt(document.getElementById('char-con').value) || 0,
+            int: parseInt(document.getElementById('char-int').value) || 0,
+            wis: parseInt(document.getElementById('char-wis').value) || 0,
+            cha: parseInt(document.getElementById('char-cha').value) || 0,
+        };
+
+        const icon_path = document.querySelector('#char-icon-grid .icon-option.selected')?.dataset.path || null;
+
+        const response = await api.put_character(session.data, {
+            stat_scores,
+            leg_count: parseInt(document.getElementById('char-leg-count').value) || 2,
+            light_band: parseFloat(document.getElementById('char-band-light').value) || null,
+            medium_band: parseFloat(document.getElementById('char-band-medium').value) || null,
+            heavy_band: parseFloat(document.getElementById('char-band-heavy').value) || null,
+            band_override: document.getElementById('char-band-override').checked ? 1 : 0,
+            size_cat: document.getElementById('char-size-cat').value,
+            icon_path,
+        });
+
+        if (!response.success) {
+            toast('Failed to save character.');
+            ele.classList.remove('disabled');
+            return;
+        }
+
+        ele.classList.remove('disabled');
+        toast('Character saved.');
+        close_char_edit();
+        await load_character_sidebar(api);
+        await load_character_inventory(api);
+    });
+
+    document.getElementById('char-band-override').addEventListener('change', (e) => {
+        toggle_band_fields(e.target.checked);
+    });
 }
 
 
@@ -751,10 +813,35 @@ async function load_character_inventory(api) {
         grid.appendChild(ele);
     });
 
-    const total_weight = response.data.reduce((sum, item) => {
+    const total_item_weight = response.data.reduce((sum, item) => {
         return sum + ((item.weight_lbs || 0) * item.quantity);
     }, 0);
-    document.getElementById('char-weight').textContent = `${total_weight.toFixed(1)} lbs`;
+    const wallet = await api.get_wallet(character_ck);
+    const coin_weight = wallet.success ? (wallet.data.coin_weight_lbs || 0) : 0;
+    const total_weight = total_item_weight + coin_weight;
+    const bands = window._char_bands || {};
+
+    let load_label = '';
+    let load_color = 'var(--text-secondary)';
+
+    if (bands.heavy != null && total_weight > bands.heavy) {
+        load_label = 'Over';
+        load_color = 'var(--color-danger)';
+    } else if (bands.medium != null && total_weight > bands.medium) {
+        load_label = 'Heavy';
+        load_color = 'var(--color-danger)';
+    } else if (bands.light != null && total_weight > bands.light) {
+        load_label = 'Medium';
+        load_color = '#f59e0b';  // amber
+    } else if (bands.light != null) {
+        load_label = 'Light';
+        load_color = 'var(--color-success)';
+    }
+
+    document.getElementById('char-weight').innerHTML = `
+        ${total_weight.toFixed(1)} lbs
+        ${load_label ? `<span style="font-size:12px; color:${load_color}; margin-left:6px;">● ${load_label}</span>` : ''}
+    `;
     
     const query = document.getElementById('inventory-search').value.trim().toLowerCase();
     if (query) {
@@ -763,7 +850,6 @@ async function load_character_inventory(api) {
             item.style.display = name.includes(query) ? '' : 'none';
         });
     }
-
     grid.classList.remove('reloading');
 }
 
@@ -945,4 +1031,205 @@ async function load_wallet(api) {
     document.getElementById('cur-gp').textContent = w.gp ?? 0;
     document.getElementById('cur-sp').textContent = w.sp ?? 0;
     document.getElementById('cur-cp').textContent = w.cp ?? 0;
+}
+
+async function open_char_edit(api) {
+    document.getElementById('char-edit-overlay').classList.add('active');
+    document.getElementById('char-edit-panel').classList.add('active');
+    await load_char_edit(api);
+    await load_char_icon_grid(api);
+    await wire_char_icon_drop_zone(api);
+
+    // Select current icon after grid is populated
+    const session = await api.get_session('character_ck');
+    const char_response = await api.get_character(session.data);
+    if (char_response.success && char_response.data.icon_path) {
+        const option = document.querySelector(`#char-icon-grid .icon-option[data-path="${char_response.data.icon_path}"]`);
+        if (option) option.classList.add('selected');
+    }
+}
+
+function close_char_edit() {
+    document.getElementById('char-edit-overlay').classList.remove('active');
+    document.getElementById('char-edit-panel').classList.remove('active');
+}
+
+async function load_char_edit(api) {
+    const session = await api.get_session('character_ck');
+    if (!session.success || !session.data) return;
+
+    const response = await api.get_character(session.data);
+    if (!response.success) { toast('Could not load character.'); return; }
+
+    const char = response.data;
+    const stats = char.stat_scores ? 
+        (typeof char.stat_scores === 'string' ? JSON.parse(char.stat_scores) : char.stat_scores) 
+        : {};
+
+    document.getElementById('char-edit-title').textContent = char.character_name;
+    document.getElementById('char-str').value = stats.str ?? '';
+    document.getElementById('char-dex').value = stats.dex ?? '';
+    document.getElementById('char-con').value = stats.con ?? '';
+    document.getElementById('char-int').value = stats.int ?? '';
+    document.getElementById('char-wis').value = stats.wis ?? '';
+    document.getElementById('char-cha').value = stats.cha ?? '';
+    document.getElementById('char-leg-count').value = char.leg_count || 2;
+    document.getElementById('char-band-light').value = char.weight_band_light || '';
+    document.getElementById('char-band-medium').value = char.weight_band_medium || '';
+    document.getElementById('char-band-heavy').value = char.weight_band_heavy || '';
+    document.getElementById('char-size-cat').value = char.size_cat || 'Medium';
+    const override = char.band_override === 1;
+    document.getElementById('char-band-override').checked = override;
+    toggle_band_fields(override);
+
+    if (override) {
+        // populate from DB values
+        document.getElementById('char-band-light').value = char.light_band ?? '';
+        document.getElementById('char-band-medium').value = char.medium_band ?? '';
+        document.getElementById('char-band-heavy').value = char.heavy_band ?? '';
+    } else {
+        // auto-calculate from STR + legs
+        const str = parseInt(stats.str) || 10;
+        const legs = char.leg_count || 2;
+        const size = char.size_cat || 'Medium';
+        const bands = calc_pf1_bands(str, legs, size);
+        document.getElementById('char-band-light').value = bands.light;
+        document.getElementById('char-band-medium').value = bands.medium;
+        document.getElementById('char-band-heavy').value = bands.heavy;
+    }
+
+    
+}
+
+function calc_pf1_bands(str, legs, size_cat = 'Medium') {
+    // Pathfinder v1 carry capacity table
+    const base = [0,3,6,10,13,16,20,23,26,30,33,38,43,50,58,66,76,86,100,116,133,153,173,200,233,266,306,346,400,466];
+    const light_base = str <= 0 ? 0 : str < base.length ? base[str] : Math.floor(base[29] * Math.pow(4, Math.floor((str - 29) / 10)));
+
+    const size_mult = {
+        'Fine': 0.125, 'Diminutive': 0.25, 'Tiny': 0.5, 'Small': 0.75,
+        'Medium': 1, 'Large': 2, 'Huge': 4, 'Gargantuan': 8, 'Colossal': 16
+    }[size_cat] ?? 1;
+
+    const leg_mult = legs >= 4 ? 1.5 : 1.0;
+    const light = Math.floor(light_base * size_mult * leg_mult);
+
+    return {
+        light,
+        medium: light * 2,
+        heavy: light * 3
+    };
+}
+
+async function load_char_icon_grid(api) {
+    const response = await api.get_all_icons();
+    if (!response.success) return;
+
+    const grid = document.getElementById('char-icon-grid');
+    grid.innerHTML = '';
+    response.data.forEach(icon_path => {
+        const option = document.createElement('div');
+        option.className = 'icon-option';
+        option.dataset.path = icon_path;
+        option.innerHTML = `<img src="../../${icon_path}" alt="">`;
+        option.addEventListener('click', () => {
+            document.querySelectorAll('#char-icon-grid .icon-option').forEach(i => i.classList.remove('selected'));
+            option.classList.add('selected');
+        });
+        grid.appendChild(option);
+    });
+}
+
+function toggle_band_fields(enabled) {
+    ['char-band-light', 'char-band-medium', 'char-band-heavy'].forEach(id => {
+        const ele = document.getElementById(id);
+        ele.disabled = !enabled;
+        ele.style.opacity = enabled ? '1' : '0.4';
+    });
+}
+
+async function load_character_sidebar(api) {
+    const session = await api.get_session('character_ck');
+    if (!session.success || !session.data) return;
+
+    const response = await api.get_character(session.data);
+    if (!response.success) return;
+
+    const char = response.data;
+    const stats = char.stat_scores ?
+        (typeof char.stat_scores === 'string' ? JSON.parse(char.stat_scores) : char.stat_scores)
+        : {};
+
+    document.getElementById('sidebar-char-name').textContent = char.character_name;
+    document.getElementById('char-size').textContent = char.size_cat || 'Medium';
+
+    const bust = document.querySelector('#sidebar-bust .bust-icon img');
+    if (bust && char.icon_path) bust.src = `../../${char.icon_path}`;
+
+    // Calculate or use override bands
+    let light, medium, heavy;
+    if (char.band_override === 1) {
+        light = char.light_band;
+        medium = char.medium_band;
+        heavy = char.heavy_band;
+    } else {
+        const str = parseInt(stats.str) || 10;
+        const legs = char.leg_count || 2;
+        const bands = calc_pf1_bands(str, legs, char.size_cat);
+        light = bands.light;
+        medium = bands.medium;
+        heavy = bands.heavy;
+    }
+
+    document.getElementById('weight-light').textContent = light != null ? `${light} lbs` : '—';
+    document.getElementById('weight-medium').textContent = medium != null ? `${medium} lbs` : '—';
+    document.getElementById('weight-heavy').textContent = heavy != null ? `${heavy} lbs` : '—';
+
+    // Store bands for load indicator
+    window._char_bands = { light, medium, heavy };
+}
+
+function wire_char_icon_drop_zone(api) {
+    const drop_zone = document.getElementById('char-icon-panel');
+    if (!drop_zone) return;
+
+    drop_zone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        drop_zone.classList.add('dragover');
+    });
+    drop_zone.addEventListener('dragleave', () => {
+        drop_zone.classList.remove('dragover');
+    });
+    drop_zone.addEventListener('drop', async (e) => {
+        e.preventDefault();
+        drop_zone.classList.remove('dragover');
+
+        const file = e.dataTransfer.files[0];
+        if (!file) return;
+        if (file.type !== 'image/png') { toast('Only PNG files are supported'); return; }
+
+        const reader = new FileReader();
+        reader.onload = async () => {
+            const base64 = reader.result.split(',')[1];
+            const response = await api.post_icon(file.name, base64);
+            if (!response.success) { toast('Icon upload failed.'); return; }
+
+            const grid = document.getElementById('char-icon-grid');
+            let option = grid.querySelector(`[data-path="${response.data.icon_path}"]`);
+            if (!option) {
+                option = document.createElement('div');
+                option.className = 'icon-option';
+                option.dataset.path = response.data.icon_path;
+                option.innerHTML = `<img src="../../${response.data.icon_path}" alt="">`;
+                option.addEventListener('click', () => {
+                    document.querySelectorAll('#char-icon-grid .icon-option').forEach(i => i.classList.remove('selected'));
+                    option.classList.add('selected');
+                });
+                grid.appendChild(option);
+            }
+            document.querySelectorAll('#char-icon-grid .icon-option').forEach(i => i.classList.remove('selected'));
+            option.classList.add('selected');
+        };
+        reader.readAsDataURL(file);
+    });
 }
