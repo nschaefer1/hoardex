@@ -68,7 +68,7 @@ class BaseAPI:
     
     def app_path(self, relative_path):      # ← Also present in main app, duplicated to prevent coupling
         if getattr(sys, 'frozen', False):       
-            base_dir = Path(sys.executable).parent.parent.parent
+            base_dir = Path(sys.executable).parent
         else:   # This is the dev-env
             base_dir = Path(__file__).resolve().parent.parent.parent.parent
         return base_dir / relative_path

@@ -3,6 +3,10 @@ import sys
 import os
 import webview
 
+from pathlib import Path
+if getattr(sys, 'frozen', False):
+    os.chdir(Path(sys.executable).parent)
+
 from backend import API, DBManager
 from pathlib import Path
 

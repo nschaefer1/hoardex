@@ -42,7 +42,9 @@ class API(
         self.session = {}
 
     def resolve_path(self, rel_path: str) -> str:
-        return self.app_path(f'frontend/{rel_path}').as_posix()
+        path = self.app_path(f'frontend/{rel_path}').as_posix()
+        logger.info(path)
+        return path
     
     # Proxy session state controls
     def set_session(self, key, value):
