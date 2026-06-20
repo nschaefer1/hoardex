@@ -4,8 +4,8 @@
 # ============================================================
 
 # --- Edit per release ---
-$AppName = "ApplicationName"
-$Version = "0.0.0"
+$AppName = "Hoardex"
+$Version = "1.0.0"
 # ------------------------
 
 $BuildFolder = "${AppName}_v${Version}"
@@ -17,21 +17,21 @@ if (Test-Path ".\build\$BuildFolder") { Remove-Item -Recurse -Force ".\build\$Bu
 if (Test-Path ".\$BuildFolder.spec") { Remove-Item -Force ".\$BuildFolder.spec" }
 
 # Build single-file exe (with console)
-pyinstaller `
-    --onefile `
-    --icon="icon.ico" `
-    --name "$BuildFolder" `
-    --distpath "$OutDir" `
-    app.py
-
-# No console version
 # pyinstaller `
 #     --onefile `
-#     --windowed `
 #     --icon="icon.ico" `
 #     --name "$BuildFolder" `
 #     --distpath "$OutDir" `
 #     app.py
+
+# No console version
+pyinstaller `
+    --onefile `
+    --windowed `
+    --icon="icon.ico" `
+    --name "$BuildFolder" `
+    --distpath "$OutDir" `
+    app.py
 
 # Rename the exe to the stable app name
 $ExePath = "$OutDir\$BuildFolder.exe"

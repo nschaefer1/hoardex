@@ -15,7 +15,7 @@ class MainApp:
         index_html = self.app_path('frontend/html/index.html').replace('\\', '/')
         
         self.window = webview.create_window(
-            'Application Name',
+            'Hoardex',
             f'file:///{index_html}',
             width=1400,
             height=900,
