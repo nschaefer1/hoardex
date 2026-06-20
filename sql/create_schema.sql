@@ -1,4 +1,9 @@
 
+create table if not exists db_version (
+    version integer primary key not null
+);
+insert or ignore into db_version values (1);
+
 create table if not exists dim_icon (
     icon_path text primary key not null unique,
     icon_hash text not null
@@ -22,8 +27,11 @@ create table if not exists dim_character (
     icon_path text default 'frontend/icons/default_bust.png',
 
     created_at integer,         -- will hold the unix epoch
-    last_login integer
+    last_login integer,
+
+    foreign key (icon_path) references dim_icon(icon_path) on delete set default
 );
+create index if not exists idx_dc_icon_path on dim_character (icon_path);
 
 create table if not exists dim_inventory (
     inv_ck integer primary key not null unique,

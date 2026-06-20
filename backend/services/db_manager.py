@@ -134,3 +134,16 @@ class DBManager:
             raise
         finally:
             conn.close()
+
+    def _run_migration(self):
+        result = self.execute("SELECT version FROM db_version;")
+        current = result.rows[0][0] if result.success and result.row_count > 0 else 0
+
+        if current < 2:
+            pass
+            # self.execute("ALTER TABLE dim_character ADD COLUMN new_field text;")
+            # self.execute("UPDATE db_version SET version = 2;")
+    
+        if current < 3:
+            pass
+            # self.execute("UPDATE db_version SET version = 3;")

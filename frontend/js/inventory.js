@@ -667,6 +667,14 @@ function show_edit_form_populated() {
         });
     }
 
+    // Auto-select current icon
+    if (item.icon_path) {
+        document.querySelectorAll('.icon-option').forEach(i => i.classList.remove('selected'));
+        const option = document.querySelector(`#icon-grid .icon-option[data-path="${item.icon_path}"]`);
+        if (option) option.classList.add('selected');
+    }
+
+
     show_edit_form();
 }
 
